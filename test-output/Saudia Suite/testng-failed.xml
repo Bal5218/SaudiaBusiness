@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [Saudia Suite]" guice-stage="DEVELOPMENT">
+  <test thread-count="5" name="Flight Booking(failed)">
+    <parameter name="browser" value="chrome"/>
+    <classes>
+      <class name="flightBoookingTest.SaudiaBookingTest">
+        <methods>
+          <include name="tearDown"/>
+          <include name="CompnayProfile"/>
+          <include name="setup"/>
+        </methods>
+      </class> <!-- flightBoookingTest.SaudiaBookingTest -->
+    </classes>
+  </test> <!-- Flight Booking(failed) -->
+</suite> <!-- Failed suite [Saudia Suite] -->
