@@ -6,6 +6,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,7 +35,9 @@ public class FlightBookingForAllPaxPage extends BasePage {
 //	@FindBy(xpath = "//a[@aria-label='Go to homepage']")
 //	private WebElement Saudialogo;
 	
-	
+	@FindBy(xpath = "//app-passenger-selector//button[.//span[normalize-space()='Continue']]")
+	private WebElement Continuebtn;
+
 	private By saudiaLogo =
 	        By.xpath("//a[@aria-label='Go to homepage']");
 	
@@ -135,6 +138,16 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "//mat-expansion-panel-header[@aria-controls='cdk-accordion-child-19']")
 	private WebElement ContinueToExtrasBtn;
+	
+	
+	
+	
+
+
+	
+	
+	
+	
 //
 //	@FindBy(xpath = "//div[normalize-space()='SADAD']")
 //	private WebElement SdadRadiobtn;
@@ -199,7 +212,7 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "//ng-select[@formcontrolname='issuingCountry']")
 	private WebElement IssueCountryDropdown;
-
+	
 //
 //			@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
 //			private WebElement NextPassengerBtn;
@@ -223,6 +236,29 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
 	private WebElement AdultApplyselectionbtn;
+	
+	//depaendent
+	@FindBy(xpath = "//button[text()='Add dependent  ']")
+	private WebElement addDependentBtn;
+	
+	@FindBy(xpath = "//mat-dialog-actions//button[.//span[contains(@class,'mdc-button__label') and normalize-space()='Add']]")
+	private WebElement Addbtn;
+
+	
+	
+//	@FindBy(xpath = "//div[contains(@class,'delete-passenger-form-wrapper')]")
+//	private WebElement AllChkbox;
+//
+//	private By dependentPopup =  By.xpath("//h3[normalize-space()='Saved Dependents']");
+//	        
+	
+	
+	
+	       
+	
+	
+	
+	
 
 //			private By applySelectionBtn =
 //			        By.xpath("//button[normalize-space()='Apply selection']");
@@ -241,14 +277,16 @@ public class FlightBookingForAllPaxPage extends BasePage {
 			selectDeparturecity(data);
 			Thread.sleep(3000);
 			selectArrivalcity(data);
+			
+			webdriverutility.click(acceptCookieBtn);
 
 			webdriverutility.selectPikadayDate(DepartureCalendaricon, departureDateInput, data.getDeparturedate(),
-					false);
+					false,null);
 
 		} else if (tripType.equalsIgnoreCase("Round trip")) {
 
 			selectDeparturecity(data);
-
+Thread.sleep(6000);
 			selectArrivalcity(data);
 
 			webdriverutility.click(acceptCookieBtn);
@@ -268,7 +306,7 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 		// From Textbox
 
-		// Thread.sleep(4000);
+		Thread.sleep(8000);
 
 		TravellerType(data);
 		String Traveller = data.getTravellerType().trim();
@@ -286,9 +324,7 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 			webdriverutility.clickWithRetry(employeeSuggestion);
 
-		webdriverutility.waitForVisibility(acceptCookieBtn);
-		webdriverutility.click(acceptCookieBtn);
-		
+
 
 		}
 
@@ -302,6 +338,8 @@ public class FlightBookingForAllPaxPage extends BasePage {
 		webdriverutility.waitForVisibility(SearchFlightbtn);
 
 		ReportUtil.attachFullPageScreenshot(driver, "Search data is entered");
+		
+		Thread.sleep(7000);
 
 		clickSearchButton();
 	
@@ -404,18 +442,23 @@ public class FlightBookingForAllPaxPage extends BasePage {
 		);
 
 		System.out.println("Continue to Passenger is clickable.");
-
 		webdriverutility.click(ContinueToPassengerBtn);
 
 		System.out.println("Passenger page opened.");
 
+		// Employee Family Trip
+		if (Traveller.equalsIgnoreCase("Employee")
+		        && data.getTripCategory().trim().equalsIgnoreCase("Family trip")) {
+
+			Adddependent(data);
+		}
+
+		// Guest traveler
 		if (Traveller.equalsIgnoreCase("Guest traveler")) {
 		    Adultdetails(data);
 		}
-		webdriverutility.waitForVisibility(ContinueToPaymentBtn);
-		ReportUtil.attachFullPageScreenshot(driver, "Passenger page is displayed");
 
-		webdriverutility.click(ContinueToPaymentBtn);
+		webdriverutility.waitForVisibility(ContinueToPaymentBtn);		webdriverutility.click(ContinueToPaymentBtn);
 
 		
 
@@ -508,9 +551,9 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 		// Wait for first departure date field
 		webdriverutility.waitForVisibility(departureDateInput);
-
+		webdriverutility.click(acceptCookieBtn);
 		// Select first departure date
-		webdriverutility.selectPikadayDate(DepartureCalendaricon, departureDateInput, data.getDeparturedate(), false);
+		webdriverutility.selectPikadayDate(DepartureCalendaricon, departureDateInput, data.getDeparturedate(), false,null);
 
 		System.out.println("SEGMENT 1 DATE SELECTED = " + data.getDeparturedate());
 
@@ -535,7 +578,7 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 		// Select SECOND departure date
 		webdriverutility.selectPikadayDate(DepartureCalendaricon2, departureDateInput2,
-				data.getMultiCityDepartureDate2(), false);
+				data.getMultiCityDepartureDate2(), false,  data.getDeparturedate());
 
 		System.out.println("SEGMENT 2 DATE SELECTED = " + data.getMultiCityDepartureDate2());
 
@@ -587,69 +630,244 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	public void TravellerType(FlightBookingData data) throws Throwable {
 
-		String Traveller = data.getTravellerType().trim();
-		String TripCategory = data.getTripCategory().trim();
+	    String Traveller = data.getTravellerType().trim();
+	    String TripCategory = data.getTripCategory().trim();
 
-		webdriverutility.click(TravelCalssDropdown);
+	    System.out.println("Traveller    = " + Traveller);
+	    System.out.println("TripCategory = " + TripCategory);
 
-		if (Traveller.equalsIgnoreCase("Employee")) {
+	 
 
-			if (!EmployeeRadiobtn.getAttribute("class").contains("checked")) {
+	    if (Traveller.equalsIgnoreCase("Employee")) {
 
-				webdriverutility.click(EmployeeRadiobtn);
-			}
+	    
 
-			if (TripCategory.equalsIgnoreCase("Business trip")) {
+	        webdriverutility.click(TravelCalssDropdown);
 
-				if (!BusinessTripRadioBtn.getAttribute("class").contains("checked")) {
+	       
 
-					Thread.sleep(3000);
-					webdriverutility.click(BusinessTripRadioBtn);
-				}
+	        if (!EmployeeRadiobtn.getAttribute("class").contains("checked")) {
 
-			} else if (TripCategory.equalsIgnoreCase("Family trip")) {
+	            webdriverutility.click(EmployeeRadiobtn);
 
-				if (!FamilyTripRadioBtn.getAttribute("class").contains("checked")) {
+	        }
 
-					webdriverutility.click(FamilyTripRadioBtn);
-				}
-				int adults = Integer.parseInt(data.getAdults().trim());
-				int children = Integer.parseInt(data.getChildren().trim());
-				int Infants = Integer.parseInt(data.getInfant().trim());
+	      
+	        if (TripCategory.equalsIgnoreCase("Business trip")) {
 
-				webdriverutility.clickMultipleTimes(adultPlusBtn, adults - 1);
-				Thread.sleep(3000);
+	            if (!BusinessTripRadioBtn.getAttribute("class").contains("checked")) {
 
-				webdriverutility.clickMultipleTimes(childPlusBtn, children);
+	                webdriverutility.click(BusinessTripRadioBtn);
 
-				Thread.sleep(3000);
-				webdriverutility.clickMultipleTimes(infantLapPlusBtn, Infants);
+	            }
 
-			}
-			webdriverutility.click(ApplySelectionBtn);
+	            // Business trip does NOT need passenger count here.
+	            webdriverutility.click(ApplySelectionBtn);
 
-		} else if (Traveller.equalsIgnoreCase("Guest traveler")) {
+	        }
 
-			webdriverutility.click(GuestTravellerRadioBtn);
-			webdriverutility.click(acceptCookieBtn);
-			webdriverutility.click(PassengerDetailDropdown);
-			;
-			int adults = Integer.parseInt(data.getAdults().trim());
-			System.out.println("no. of adults:" + adults);
+	        else if (TripCategory.equalsIgnoreCase("Family trip")) {
 
-			webdriverutility.clickMultipleTimes(adultPlusBtn, adults - 1);
+	       
 
-		} else if (Traveller.equalsIgnoreCase(" Multiple travelers ")) {
+	            if (!FamilyTripRadioBtn.getAttribute("class").contains("checked")) {
 
-			webdriverutility.click(MultipleTravellerRadioBtn);
+	                webdriverutility.click(FamilyTripRadioBtn);
 
-			int adults = Integer.parseInt(data.getAdults().trim());
+	            }
 
-			webdriverutility.clickMultipleTimes(adultPlusBtn, adults - 1);
+	            System.out.println("Family trip selected.");
 
-		}
+	      
 
+	            int adults = parsePassengerCount(data.getAdults());
+	            int children = parsePassengerCount(data.getChildren());
+	            int infants = parsePassengerCount(data.getInfant());
+
+	            System.out.println("Adults   = " + adults);
+	            System.out.println("Children = " + children);
+	            System.out.println("Infants  = " + infants);
+
+	          
+	            webdriverutility.click(ApplySelectionBtn);
+
+	            
+	            WebDriverWait wait =
+	                    new WebDriverWait(driver, Duration.ofSeconds(30));
+
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            PassengerDetailDropdown
+	                    )
+	            );
+
+	            webdriverutility.click(PassengerDetailDropdown);
+
+	            System.out.println("Passengers and cabin opened.");
+
+	           
+
+	            wait.until(
+	                    ExpectedConditions.visibilityOf(adultPlusBtn)
+	            );
+
+	           
+
+	            if (adults > 1) {
+
+	                webdriverutility.clickMultipleTimes(
+	                        adultPlusBtn,
+	                        adults - 1
+	                );
+	            }
+
+	           
+	            if (children > 0) {
+
+	                wait.until(
+	                        ExpectedConditions.visibilityOf(childPlusBtn)
+	                );
+
+	                webdriverutility.clickMultipleTimes(
+	                        childPlusBtn,
+	                        children
+	                );
+	            }
+
+	          
+
+	            if (infants > 0) {
+
+	                wait.until(
+	                        ExpectedConditions.visibilityOf(infantLapPlusBtn)
+	                );
+
+	                webdriverutility.clickMultipleTimes(
+	                        infantLapPlusBtn,
+	                        infants
+	                );
+	            }
+
+	            
+
+	            wait.until(
+	                    ExpectedConditions.visibilityOf(Continuebtn)
+	            );
+
+	            ((JavascriptExecutor) driver).executeScript(
+	                    "arguments[0].scrollIntoView({block:'center'});",
+	                    Continuebtn
+	            );
+
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(Continuebtn)
+	            );
+
+	            System.out.println(
+	                    "Clicking Continue after passenger selection..."
+	            );
+
+	            Continuebtn.click();
+
+	            System.out.println(
+	                    "Passenger selection completed successfully."
+	            );
+	        }
+
+	        else {
+
+	            throw new IllegalArgumentException(
+	                    "Invalid Trip Category for Employee: "
+	                    + TripCategory
+	            );
+	        }
+	    }
+
+	    // =========================================================
+	    // GUEST TRAVELER
+	    // =========================================================
+
+	    else if (Traveller.equalsIgnoreCase("Guest traveler")) {
+
+	        webdriverutility.click(GuestTravellerRadioBtn);
+
+	        webdriverutility.click(acceptCookieBtn);
+
+	        webdriverutility.click(PassengerDetailDropdown);
+
+	        int adults = Integer.parseInt(
+	                data.getAdults().trim()
+	        );
+
+	        System.out.println("No. of adults: " + adults);
+
+	        if (adults > 1) {
+
+	            webdriverutility.clickMultipleTimes(
+	                    adultPlusBtn,
+	                    adults - 1
+	            );
+	        }
+
+	        WebDriverWait wait =
+	                new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	        wait.until(
+	                ExpectedConditions.visibilityOf(Continuebtn)
+	        );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center'});",
+	                Continuebtn
+	        );
+
+	        wait.until(
+	                ExpectedConditions.elementToBeClickable(Continuebtn)
+	        );
+
+	        System.out.println("Clicking Continue button...");
+
+	        Continuebtn.click();
+
+	        System.out.println(
+	                "Continue button clicked successfully."
+	        );
+	    }
+
+	    // =========================================================
+	    // MULTIPLE TRAVELERS
+	    // =========================================================
+
+	    else if (Traveller.equalsIgnoreCase("Multiple travelers")) {
+
+	        webdriverutility.click(MultipleTravellerRadioBtn);
+
+	        int adults = Integer.parseInt(
+	                data.getAdults().trim()
+	        );
+
+	        if (adults > 1) {
+
+	            webdriverutility.clickMultipleTimes(
+	                    adultPlusBtn,
+	                    adults - 1
+	            );
+	        }
+	    }
+
+	    else {
+
+	        throw new IllegalArgumentException(
+	                "Unsupported Traveller Type: " + Traveller
+	        );
+	    }
 	}
+	private int parsePassengerCount(String value) {
+    if (value == null || value.trim().isEmpty()) {
+        return 0;
+    }
+    return Integer.parseInt(value.trim());
+}
 
 	private void selectCity(WebElement cityTextbox, String city) throws Throwable {
 
@@ -759,7 +977,7 @@ public class FlightBookingForAllPaxPage extends BasePage {
 			webdriverutility.click(NextPassengerBtn);
 
 			// Wait for Adult 2 form
-			Thread.sleep(5000);
+			Thread.sleep(8000);
 			webdriverutility.selectMatOptionByVisibleText(AdultTitleDropdown, data.getAdult2Title().trim());
 
 			Thread.sleep(3000);
@@ -803,6 +1021,57 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	}
 
+	
+//	public void Adultdetails(FlightBookingData data) throws Throwable {
+//
+//	    int adults = Integer.parseInt(data.getAdults().trim());
+//
+//	    for (int i = 1; i <= adults; i++) {
+//
+//	        System.out.println("Filling Adult " + i);
+//
+//	        // Fill current adult details
+//	        webdriverutility.selectMatOptionByVisibleText(
+//	                AdultTitleDropdown,
+//	                getAdultTitle(data, i));
+//
+//	        webdriverutility.sendKeys(
+//	                FirstNameTextBox,
+//	                getAdultFirstName(data, i));
+//
+//	        webdriverutility.sendKeys(
+//	                LastNameTextBox,
+//	                getAdultLastName(data, i));
+//
+//	        webdriverutility.selectDateAndConfirm(
+//	                DOBInputTextbox,
+//	                getAdultDOB(data, i));
+//
+//	        webdriverutility.selectNgOptionByVisibleText(
+//	                NationalityDropdown,
+//	                getAdultNationality(data, i));
+//
+//	        webdriverutility.sendKeys(
+//	                PasspoertTextBox,
+//	                getAdultPassport(data, i));
+//
+//	        webdriverutility.selectPassportExpiryDate(
+//	                ExpiryDateInput,
+//	                getAdultPassportExpiry(data, i));
+//
+//	        webdriverutility.selectNgOptionByVisibleText(
+//	                IssueCountryDropdown,
+//	                getAdultIssueCountry(data, i));
+//
+//	        // Move to next adult
+//	        if (i < adults) {
+//	            webdriverutility.click(NextPassengerBtn);
+//	            Thread.sleep(2000);
+//	        }
+//	    }
+//
+//	    webdriverutility.click(AdultApplyselectionbtn);
+//	}
 	private void printAllExpandButtons() {
 
 		List<WebElement> expandButtons = driver.findElements(allExpandFareBtns);
@@ -855,32 +1124,423 @@ public class FlightBookingForAllPaxPage extends BasePage {
 	}
 	public void clickSearchButton() {
 
-	    WebDriverWait wait =
-	            new WebDriverWait(driver, Duration.ofSeconds(20));
+	    By searchFlightBtn = By.xpath(
+	            "//div[contains(@class,'submit-btn') "
+	            + "and not(contains(@class,'submit-btn-mobile'))]"
+	            + "//button[@type='submit' "
+	            + "and .//span[normalize-space()='Search flights']]"
+	    );
 
-	    WebElement searchButton =
-	            wait.until(ExpectedConditions.visibilityOf(SearchFlightbtn));
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(30));
+
+	    WebElement searchButton = wait.until(
+	            ExpectedConditions.elementToBeClickable(searchFlightBtn)
+	    );
 
 	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            searchButton);
-
-	    wait.until(ExpectedConditions.elementToBeClickable(searchButton));
+	            "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+	            searchButton
+	    );
 
 	    try {
 
+	        wait.until(ExpectedConditions.elementToBeClickable(searchButton));
+
 	        searchButton.click();
 
-	        System.out.println("Search button clicked normally");
+	        System.out.println("Search button clicked successfully.");
+
+	    } catch (ElementClickInterceptedException e) {
+
+	        System.out.println("Normal click intercepted. Using JS click.");
+
+	        // Re-locate the element because DOM may have changed
+	        WebElement freshSearchButton = wait.until(
+	                ExpectedConditions.elementToBeClickable(searchFlightBtn)
+	        );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                freshSearchButton
+	        );
+
+	        System.out.println("Search button clicked using JS.");
+	    }
+	}
+	private void clickReview() throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	    WebElement reviewButton = wait.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    By.xpath("//button[normalize-space()='Review']")
+	            )
+	    );
+
+	    reviewButton.click();
+
+	    System.out.println("Review clicked.");
+	}
+	public void Adddependent(FlightBookingData data) throws Throwable {
+
+	    int adults = parsePassengerCount(data.getAdults());
+	    int children = parsePassengerCount(data.getChildren());
+	    int infants = parsePassengerCount(data.getInfant());
+
+	    System.out.println("Adults   = " + adults);
+	    System.out.println("Children = " + children);
+	    System.out.println("Infants  = " + infants);
+
+	    if (adults > 1) {
+
+	        System.out.println("Adults > 1. Clicking Add dependent.");
+
+	        WebDriverWait wait =
+	                new WebDriverWait(driver, Duration.ofSeconds(30));
+
+	        // IMPORTANT:
+	        // Re-locate Add dependent from the CURRENT DOM
+	        WebElement addDependent = wait.until(
+	                ExpectedConditions.elementToBeClickable(
+	                        addDependentBtn
+	                )
+	        );
+
+	        // Scroll current element into view
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
+	                addDependent
+	        );
+
+	        Thread.sleep(500);
+
+	        // Re-locate AGAIN because Angular may refresh the DOM
+	        addDependent = wait.until(
+	                ExpectedConditions.elementToBeClickable(
+	                        addDependentBtn
+	                )
+	        );
+
+	        try {
+
+	            addDependent.click();
+
+	            System.out.println(
+	                    "Add dependent clicked successfully."
+	            );
+
+	        } catch (StaleElementReferenceException e) {
+
+	            System.out.println(
+	                    "Add dependent became stale. Re-locating..."
+	            );
+
+	            // Find a completely fresh element
+	            addDependent = wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            addDependentBtn
+	                    )
+	            );
+
+	            ((JavascriptExecutor) driver).executeScript(
+	                    "arguments[0].click();",
+	                    addDependent
+	            );
+
+	            System.out.println(
+	                    "Add dependent clicked using fresh element."
+	            );
+	        }
+
+	        // Wait for Saved Dependents popup
+	        wait.until(
+	                ExpectedConditions.visibilityOfElementLocated(
+	                        By.xpath(
+	                                "//h3[normalize-space()='Saved Dependents']"
+	                        )
+	                )
+	        );
+
+	        System.out.println(
+	                "Saved Dependents popup opened."
+	        );
+
+	        // Select required adults
+	        selectAdultCheckboxes(adults);
+
+	        // Assign status
+	        selectPriorityForAllAdults(adults);
+
+	        // Review
+	       webdriverutility.click(Addbtn);
+	       clickReview();
+	    }
+	}
+	private void selectDependent(int dependentNumber, int priority)
+	        throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(30));
+
+	    System.out.println(
+	            "Selecting dependent. Index = " + dependentNumber
+	                    + " | Priority = " + priority
+	    );
+
+	    // 1. Click Add dependent
+	    wait.until(
+	            ExpectedConditions.elementToBeClickable(addDependentBtn)
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            addDependentBtn
+	    );
+
+	    try {
+
+	        addDependentBtn.click();
 
 	    } catch (ElementClickInterceptedException e) {
 
 	        System.out.println(
-	                "Normal click intercepted. Using JS click.");
+	                "Normal Add dependent click failed. Using JS click."
+	        );
 
-	        ((JavascriptExecutor) driver)
-	                .executeScript("arguments[0].click();", searchButton);
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                addDependentBtn
+	        );
+	    }
+
+	    System.out.println("Add dependent clicked.");
+
+	    // 2. Wait for Saved Dependents popup
+	    wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    By.xpath(
+	                            "//h3[normalize-space()='Saved Dependents']"
+	                    )
+	            )
+	    );
+
+	    System.out.println(
+	            "Saved Dependents popup opened."
+	    );
+
+	    // 3. Select required checkboxes
+	    selectAdultCheckboxes(dependentNumber);
+
+	    System.out.println(
+	            "Checkboxes selected = " + dependentNumber
+	    );
+
+	    // 4. Select status for each selected adult
+	    for (int i = 1; i <= dependentNumber; i++) {
+
+	        System.out.println(
+	                "Selecting status for Adult " + i
+	        );
+
+	        selectPriority(i, i);
+	    }
+
+	    // 5. Click Review
+	    clickReview();
+
+	    System.out.println(
+	            "Dependent assignment completed."
+	    );
+	}
+	
+	private void selectPriority(int adultIndex, int priority) throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	    System.out.println(
+	            "Selecting status for Adult " + adultIndex
+	                    + " = Adult - " + priority
+	    );
+
+	 
+	    By statusLocator = By.xpath(
+	            "//div[contains(@class,'delete-passenger-form-wrapper')]"
+	          + "//*[normalize-space()='Status']"
+	    );
+
+	    List<WebElement> statusElements = wait.until(
+	            ExpectedConditions.visibilityOfAllElementsLocatedBy(
+	                    statusLocator
+	            )
+	    );
+
+	    System.out.println(
+	            "Total Status controls found = "
+	                    + statusElements.size()
+	    );
+
+	    if (adultIndex > statusElements.size()) {
+
+	        throw new RuntimeException(
+	                "Cannot select status for Adult "
+	                + adultIndex
+	                + ". Only "
+	                + statusElements.size()
+	                + " Status controls found."
+	        );
+	    }
+
+	    // adultIndex is 1-based
+	    WebElement status = statusElements.get(adultIndex - 1);
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            status
+	    );
+
+	    Thread.sleep(500);
+
+	    /*
+	     * Click the actual Status text/control.
+	     */
+	    try {
+
+	        wait.until(
+	                ExpectedConditions.elementToBeClickable(status)
+	        );
+
+	        status.click();
+
+	    } catch (Exception e) {
+
+	        System.out.println(
+	                "Normal Status click failed. Using JS click."
+	        );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                status
+	        );
+	    }
+
+	    System.out.println(
+	            "Status dropdown opened for Adult "
+	                    + adultIndex
+	    );
+
+	  
+	    By priorityOption = By.xpath(
+	            "//mat-option[@role='option']"
+	          + "[normalize-space(.)='Adult - "
+	          + priority
+	          + "']"
+	    );
+
+	    WebElement option = wait.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    priorityOption
+	            )
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            option
+	    );
+
+	    option.click();
+
+	    System.out.println(
+	            "Priority selected successfully: Adult - "
+	                    + priority
+	    );
+	}
+	public void selectAdultCheckboxes(int numberOfAdults) throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(30));
+//
+//	    // Wait until Add Dependent popup is displayed
+//	    wait.until(ExpectedConditions.visibilityOfElementLocated(
+//	            By.xpath("//h3[normalize-space()='Saved Dependents']")));
+
+	    By adultCheckboxesLocator = By.xpath(
+	            "//div[contains(@class,'delete-passenger-form-wrapper')]"
+	          + "//mat-checkbox"
+	    );
+
+	    List<WebElement> checkboxes = wait.until(
+	            ExpectedConditions.presenceOfAllElementsLocatedBy(
+	                    adultCheckboxesLocator));
+
+	    System.out.println("Total checkboxes found = " + checkboxes.size());
+	           
+
+	    System.out.println("Number of adults required = " + numberOfAdults);
+	           
+
+	    if (numberOfAdults > checkboxes.size()) {
+	        throw new RuntimeException(          "Required adult checkboxes = " + numberOfAdults  + ", but only " + checkboxes.size()+ " checkboxes are available."	       
+	                
+	        );
+		             
+
+	    }
+
+	    // Select checkbox according to number of adults
+	    for (int i = 0; i < numberOfAdults; i++) {
+
+	        WebElement checkbox = checkboxes.get(i);
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center'});",
+	                checkbox
+	        );
+
+	        wait.until(ExpectedConditions.elementToBeClickable(checkbox));
+
+	        // Select only if not already selected
+	        if (!checkbox.isSelected()) {
+
+	            try {
+	                checkbox.click();
+
+	            } catch (ElementClickInterceptedException e) {
+
+	                System.out.println(
+	                        "Normal click intercepted for checkbox "
+	                        + (i + 1) + ". Using JS click."
+	                );
+
+	                ((JavascriptExecutor) driver).executeScript(
+	                        "arguments[0].click();",
+	                        checkbox
+	                );
+	            }
+	        }
+
+	        System.out.println(
+	                "Adult checkbox " + (i + 1) + " selected."
+	        );
 	    }
 	}
+	private void selectPriorityForAllAdults(int numberOfAdults)
+	        throws Throwable {
 
-}
+	    for (int i = 1; i <= numberOfAdults; i++) {
+
+	        System.out.println(
+	                "Assigning status to selected adult: Adult - "
+	                        + i
+	        );
+
+	        selectPriority(i, i);
+	    }
+
+	    System.out.println(
+	            "Status assigned to all selected adults."
+	    );
+	}
+	}

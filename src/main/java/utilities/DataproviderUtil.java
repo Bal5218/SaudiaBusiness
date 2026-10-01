@@ -7,9 +7,13 @@ public class DataproviderUtil {
     @DataProvider(name = "CompanyProfileData")
     public static Object[][] companyProfileData() {
 
-        ExcelUtil.openExcel("BookingRegistrationdata");
+        ExcelUtil.openExcel(
+                Ipathconstant.excelfile_path1,
+                "BookingRegistrationdata"
+        );
 
-        Object[][] excelData = ExcelUtil.getExcelData();
+        Object[][] excelData =
+                ExcelUtil.getExcelData();
 
         Object[][] testData =
                 new Object[excelData.length][1];
@@ -29,7 +33,10 @@ public class DataproviderUtil {
     @DataProvider(name = "FlightBookingData")
     public static Object[][] flightBookingData() {
 
-        ExcelUtil.openExcel("FlightBookingData");
+        ExcelUtil.openExcel(
+                Ipathconstant.excelfile_path,
+                "FlightBookingData"
+        );
 
         Object[][] excelData =
                 ExcelUtil.getExcelData();

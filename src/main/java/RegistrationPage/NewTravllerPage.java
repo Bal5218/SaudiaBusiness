@@ -136,7 +136,9 @@ public class NewTravllerPage extends BasePage {
 	@FindBy(xpath = "//h4[contains(.,' Profile successfully created!')]")
 	private WebElement Profielselectedtxt;
 	
-	
+
+	@FindBy(xpath = "(//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable'])[2]")
+	private WebElement ThisIsmeText;
 
 	public void AddTraveller(CompanyprofileData data) throws Throwable {
 	
@@ -171,9 +173,14 @@ public class NewTravllerPage extends BasePage {
 		
 		webdriverutility.selectMatOptionByVisibleText(titleDropdown, data.getTitle().trim());
 		
+		String FirstName = TestDataGenerator.generateFirstName(
+			    data.getFirstName().trim()
+			);
 	
-		webdriverutility.sendKeys(FirstNameTextbox, data.getFirstName().trim());
-		System.out.println(data.getFirstName());
+	
+		webdriverutility.sendKeys(FirstNameTextbox, FirstName);
+		System.out.println(FirstName);
+		ReportUtil.logPass(FirstName);
 		
 		webdriverutility.sendKeys(LastNameTextbox, data.getLastname().trim());
 		
@@ -251,6 +258,8 @@ public class NewTravllerPage extends BasePage {
 		webdriverutility.click(Savebtn);
 		
 		ReportUtil.logPass("profile successfully submitted");
+		
+		webdriverutility.click(ThisIsmeText);
 			
 			
 			
