@@ -41,7 +41,15 @@ public final class TestDataGenerator {
 
         return baseName + getTwoDigitNumber();
     }
-    
+    public static String generateFirstName(String firstName) {
+
+        String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+
+        return firstName.trim()
+                + letters.charAt(random.nextInt(26))
+                + letters.charAt(random.nextInt(26));
+    }
     public static String generateEmail(String email) {
 
         String[] parts = email.split("@", 2);
@@ -158,10 +166,9 @@ public final class TestDataGenerator {
         StringBuilder password =
                 new StringBuilder();
 
-        // ==========================================
+      
         // 1. One uppercase
-        // ==========================================
-
+    
         password.append(
                 UPPERCASE.charAt(
                         random.nextInt(UPPERCASE.length())

@@ -5,8 +5,9 @@ public interface Ipathconstant {
 	
 	String propertyfile_path=projectpath+"/src/main/resources/config.properties";
 	
-	String excelfile_path=projectpath+"/src/test/resources/BooKIngResistratinData.xlsx";
+	String excelfile_path1=projectpath+"/src/test/resources/BooKIngResistratinData.xlsx";
 	
+	String excelfile_path=projectpath+"//src/test/resources/FlightSaudiadata.xlsx";
 	
 	
 

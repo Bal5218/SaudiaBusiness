@@ -22,10 +22,7 @@ public class BaseClass {
     @BeforeMethod
     public void setup(@Optional("chrome") String browser) throws Throwable {
 
-        System.out.println("====================================");
-        System.out.println("Browser = " + browser);
-        System.out.println("Thread  = " + Thread.currentThread().getId());
-        System.out.println("====================================");
+       
 
         driver = Driverfactory.initializeDriver(browser);
 
@@ -44,10 +41,7 @@ public class BaseClass {
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
 
-        System.out.println("====================================");
-        System.out.println("Closing Browser");
-        System.out.println("Thread = " + Thread.currentThread().getId());
-        System.out.println("====================================");
+        
 
         Driverfactory.quitDriver();
 

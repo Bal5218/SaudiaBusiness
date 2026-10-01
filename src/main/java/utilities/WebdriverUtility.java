@@ -636,179 +636,593 @@ public class WebdriverUtility {
 
 		System.out.println("Current window after cleanup: " + driver.getCurrentUrl());
 	}
+	public void selectPikadayDate(
+	        WebElement calendarIcon,
+	        WebElement dateInput,
+	        String targetDateString,
+	        boolean roundTrip,
+	        String referenceDateString) throws Throwable {
 
-	public void selectPikadayDate(WebElement calendarIcon, WebElement dateInput, String date, boolean roundTrip)
-			throws Throwable {
+	    // ============================================================
+	    // TARGET DATE
+	    // ============================================================
 
-		LocalDate targetDate = parseInputDate(date);
-		int targetDay = targetDate.getDayOfMonth();
-		YearMonth targetMonth = YearMonth.from(targetDate);
+	    LocalDate targetDate =
+	            parseInputDate(targetDateString);
 
-		String targetMonthText = targetDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " "
-				+ targetDate.getYear();
+	    int targetDay =
+	            targetDate.getDayOfMonth();
 
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+	    YearMonth targetMonth =
+	            YearMonth.from(targetDate);
 
-		By calendarPopup = By
-				.xpath("//div[contains(@class,'calendar-popup') " + "and contains(@class,'homepageCalender')]");
 
-		// Open calendar
-		WebElement icon = wait.until(ExpectedConditions.elementToBeClickable(calendarIcon));
+	    // ============================================================
+	    // REFERENCE DATE
+	    //
+	    // Normal departure:
+	    // referenceDateString = null
+	    //
+	    // Multi-city Segment 2:
+	    // referenceDateString = Segment 1 departure date
+	    // ============================================================
 
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", icon);
+	    YearMonth referenceMonth = null;
 
-		Thread.sleep(300);
+	    if (referenceDateString != null
+	            && !referenceDateString.trim().isEmpty()) {
 
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", icon);
+	        LocalDate referenceDate =
+	                parseInputDate(referenceDateString);
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(calendarPopup));
+	        referenceMonth =
+	                YearMonth.from(referenceDate);
+	    }
 
-		System.out.println("Calendar opened.");
 
-		for (int attempt = 0; attempt < 24; attempt++) {
+	    System.out.println(
+	            "==================================================");
 
-			WebElement calendar = wait.until(ExpectedConditions.visibilityOfElementLocated(calendarPopup));
+	    System.out.println(
+	            "Selecting Date : " + targetDateString);
 
-			String calendarText = calendar.getText();
+	    System.out.println(
+	            "Target Month   : " + targetMonth);
 
-			
-			List<YearMonth> displayedMonths = getDisplayedMonths(calendarText);
+	    System.out.println(
+	            "Target Day     : " + targetDay);
 
-			System.out.println("Looking for month: " + targetMonth);
+	    System.out.println(
+	            "Round Trip     : " + roundTrip);
 
-			System.out.println("Displayed months on UI: " + displayedMonths);
+	    System.out.println(
+	            "Reference Date : " + referenceDateString);
 
-			// =================================================
-			// TARGET MONTH FOUND
-			// =================================================
+	    System.out.println(
+	            "Reference Month: " + referenceMonth);
 
-			if (displayedMonths.contains(targetMonth)) {
+	    System.out.println(
+	            "==================================================");
 
-				WebElement dateElement = findDateElementInsideCorrectMonth(calendar, targetMonth, targetDay);
 
-				if (dateElement == null) {
+	    WebDriverWait wait =
+	            new WebDriverWait(
+	                    driver,
+	                    Duration.ofSeconds(20));
 
-					throw new RuntimeException("Target date " + targetDay + " not found inside " + targetMonthText);
-				}
 
-				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});",
-						dateElement);
+	    // ============================================================
+	    // CALENDAR POPUP
+	    // ============================================================
 
-				Thread.sleep(300);
+	    By calendarPopup =
+	            By.xpath(
+	                    "//div[contains(@class,'calendar-popup') "
+	                    + "and contains(@class,'homepageCalender')]");
 
-				try {
 
-					wait.until(ExpectedConditions.elementToBeClickable(dateElement)).click();
+	    // ============================================================
+	    // OPEN CALENDAR
+	    // ============================================================
 
-				} catch (Exception e) {
+	    WebElement icon =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            calendarIcon));
 
-					System.out.println("Normal date click failed. " + "Using JS click.");
 
-					((JavascriptExecutor) driver).executeScript("arguments[0].click();", dateElement);
-				}
+	    ((JavascriptExecutor) driver)
+	            .executeScript(
+	                    "arguments[0].scrollIntoView({block:'center'});",
+	                    icon);
 
-				System.out.println("Successfully clicked date: " + targetDay + " (" + targetMonthText + ")");
+	    Thread.sleep(300);
 
-				Thread.sleep(500);
 
-				// =================================================
-				// ROUND TRIP MODE
-				// =================================================
+	    try {
 
-				if (roundTrip) {
+	        icon.click();
 
-					System.out.println("ROUND TRIP = TRUE");
+	    } catch (Exception e) {
 
-					System.out.println("Departure selected.");
+	        System.out.println(
+	                "Normal calendar click failed. "
+	                + "Using JS click.");
 
-					System.out.println("Calendar remains OPEN for return date.");
+	        ((JavascriptExecutor) driver)
+	                .executeScript(
+	                        "arguments[0].click();",
+	                        icon);
+	    }
 
-					return;
-				}
 
-				// =================================================
-				// ONE WAY / MULTI CITY
-				// =================================================
+	    wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    calendarPopup));
 
-				wait.until(driver -> {
 
-					try {
+	    System.out.println(
+	            "Calendar opened.");
 
-						String value = dateInput.getAttribute("value");
 
-						return value != null && value.contains(String.valueOf(targetDay));
+	    // ============================================================
+	    // STEP 1
+	    //
+	    // IF REFERENCE MONTH IS PROVIDED,
+	    // FIRST MOVE CALENDAR TO REFERENCE MONTH.
+	    //
+	    // Example:
+	    //
+	    // Segment 1 = 14-Oct-2026
+	    // Calendar opens = Sep-2026
+	    //
+	    // Sep -> NEXT -> Oct
+	    //
+	    // Once Oct is reached, this loop STOPS.
+	    // ============================================================
 
-					} catch (StaleElementReferenceException e) {
+	    if (referenceMonth != null) {
 
-						return false;
-					}
-				});
+	        boolean referenceMonthReached = false;
 
-				System.out.println("Date selected successfully: " + dateInput.getAttribute("value"));
 
-				return;
-			}
+	        for (int attempt = 0; attempt < 24; attempt++) {
 
-			// =================================================
-			// NO MONTH FOUND
-			// =================================================
+	            WebElement calendar =
+	                    wait.until(
+	                            ExpectedConditions
+	                                    .visibilityOfElementLocated(
+	                                            calendarPopup));
 
-			if (displayedMonths.isEmpty()) {
 
-				throw new RuntimeException("Unable to read calendar month from UI: " + calendarText);
-			}
+	            List<YearMonth> displayedMonths =
+	                    getDisplayedMonths(
+	                            calendar.getText());
 
-			YearMonth firstDisplayed = displayedMonths.get(0);
 
-			YearMonth lastDisplayed = displayedMonths.get(displayedMonths.size() - 1);
+	            System.out.println(
+	                    "Reference navigation - displayed months = "
+	                    + displayedMonths);
 
-			// =================================================
-			// PREVIOUS MONTH
-			// =================================================
+	            System.out.println(
+	                    "Reference month = "
+	                    + referenceMonth);
 
-			if (targetMonth.isBefore(firstDisplayed)) {
 
-				By previousButton = By.xpath(".//button[.//mat-icon[" + "normalize-space()='arrow_back' "
-						+ "or normalize-space()='keyboard_arrow_left' " + "or normalize-space()='chevron_left'" + "]]");
+	            if (displayedMonths.isEmpty()) {
 
-				WebElement previous = wait
-						.until(ExpectedConditions.elementToBeClickable(calendar.findElement(previousButton)));
+	                throw new RuntimeException(
+	                        "Unable to read calendar month.");
+	            }
 
-				((JavascriptExecutor) driver).executeScript("arguments[0].click();", previous);
 
-				Thread.sleep(700);
+	            // ====================================================
+	            // REFERENCE MONTH FOUND
+	            // ====================================================
 
-				continue;
-			}
+	            if (displayedMonths.contains(
+	                    referenceMonth)) {
 
-			// =================================================
-			// NEXT MONTH
-			// =================================================
+	                System.out.println(
+	                        "Reference month reached: "
+	                        + referenceMonth);
 
-			if (targetMonth.isAfter(lastDisplayed)) {
+	                referenceMonthReached = true;
 
-				By nextButton = By.xpath(".//button[.//mat-icon[" + "normalize-space()='arrow_forward' "
-						+ "or normalize-space()='keyboard_arrow_right' " + "or normalize-space()='chevron_right'"
-						+ "]]");
+	                break;
+	            }
 
-				WebElement next = wait.until(ExpectedConditions.elementToBeClickable(calendar.findElement(nextButton)));
 
-				((JavascriptExecutor) driver).executeScript("arguments[0].click();", next);
+	            YearMonth firstDisplayed =
+	                    displayedMonths.get(0);
 
-				Thread.sleep(700);
+	            YearMonth lastDisplayed =
+	                    displayedMonths.get(
+	                            displayedMonths.size() - 1);
 
-				continue;
-			}
 
-			throw new RuntimeException("Target month is displayed but date " + "could not be selected. "
-					+ "Displayed months = " + displayedMonths + " | Target = " + targetMonth);
-		}
+	            // ====================================================
+	            // REFERENCE MONTH IS BEFORE
+	            // ====================================================
 
-		throw new RuntimeException("Unable to select date: " + date);
+	            if (referenceMonth.isBefore(
+	                    firstDisplayed)) {
+
+	                System.out.println(
+	                        "Reference month is BEFORE "
+	                        + "current calendar month.");
+
+	                clickPreviousMonth(
+	                        calendar,
+	                        wait);
+
+	                Thread.sleep(700);
+
+	                continue;
+	            }
+
+
+	            // ====================================================
+	            // REFERENCE MONTH IS AFTER
+	            // ====================================================
+
+	            if (referenceMonth.isAfter(
+	                    lastDisplayed)) {
+
+	                System.out.println(
+	                        "Reference month is AFTER "
+	                        + "current calendar month.");
+
+	                clickNextMonth(
+	                        calendar,
+	                        wait);
+
+	                Thread.sleep(700);
+
+	                continue;
+	            }
+	        }
+
+
+	        if (!referenceMonthReached) {
+
+	            throw new RuntimeException(
+	                    "Unable to reach reference month: "
+	                    + referenceMonth);
+	        }
+	    }
+
+
+	    // ============================================================
+	    // STEP 2
+	   
+
+	    boolean targetMonthReached = false;
+
+
+	    for (int attempt = 0; attempt < 24; attempt++) {
+
+	        WebElement calendar =
+	                wait.until(
+	                        ExpectedConditions
+	                                .visibilityOfElementLocated(
+	                                        calendarPopup));
+
+
+	        List<YearMonth> displayedMonths =
+	                getDisplayedMonths(
+	                        calendar.getText());
+
+
+	        System.out.println(
+	                "Target navigation - displayed months = "
+	                + displayedMonths);
+
+	        System.out.println(
+	                "Target month = "
+	                + targetMonth);
+
+
+	        if (displayedMonths.isEmpty()) {
+
+	            throw new RuntimeException(
+	                    "Unable to read calendar month.");
+	        }
+
+
+	        // ========================================================
+	        // TARGET MONTH FOUND
+	        // ========================================================
+
+	        if (displayedMonths.contains(
+	                targetMonth)) {
+
+	            System.out.println(
+	                    "Target month found: "
+	                    + targetMonth);
+
+	            targetMonthReached = true;
+
+	            break;
+	        }
+
+
+	        YearMonth firstDisplayed =
+	                displayedMonths.get(0);
+
+	        YearMonth lastDisplayed =
+	                displayedMonths.get(
+	                        displayedMonths.size() - 1);
+
+
+	        // ========================================================
+	        // TARGET MONTH IS BEFORE
+	        // ========================================================
+
+	        if (targetMonth.isBefore(
+	                firstDisplayed)) {
+
+	            System.out.println(
+	                    "Target month is BEFORE "
+	                    + "displayed month.");
+
+	            clickPreviousMonth(
+	                    calendar,
+	                    wait);
+
+	            Thread.sleep(700);
+
+	            continue;
+	        }
+
+
+	        // ========================================================
+	        // TARGET MONTH IS AFTER
+	        // ========================================================
+
+	        if (targetMonth.isAfter(
+	                lastDisplayed)) {
+
+	            System.out.println(
+	                    "Target month is AFTER "
+	                    + "displayed month.");
+
+	            clickNextMonth(
+	                    calendar,
+	                    wait);
+
+	            Thread.sleep(700);
+
+	            continue;
+	        }
+	    }
+
+
+	    // ============================================================
+	    // TARGET MONTH MUST BE REACHED
+	    // ============================================================
+
+	    if (!targetMonthReached) {
+
+	        throw new RuntimeException(
+	                "Unable to reach target month "
+	                + targetMonth);
+	    }
+
+
+	    // ============================================================
+	    // GET FINAL CALENDAR
+	    // ============================================================
+
+	    WebElement calendar =
+	            wait.until(
+	                    ExpectedConditions
+	                            .visibilityOfElementLocated(
+	                                    calendarPopup));
+
+
+	    List<YearMonth> finalMonths =
+	            getDisplayedMonths(
+	                    calendar.getText());
+
+
+	    System.out.println(
+	            "Final displayed months = "
+	            + finalMonths);
+
+
+	    if (!finalMonths.contains(
+	            targetMonth)) {
+
+	        throw new RuntimeException(
+	                "Unable to reach target month "
+	                + targetMonth
+	                + ". Displayed = "
+	                + finalMonths);
+	    }
+
+
+	    // ============================================================
+	    // FIND TARGET DATE
+	    // ============================================================
+
+	    WebElement dateElement =
+	            findDateElementInsideCorrectMonth(
+	                    calendar,
+	                    targetMonth,
+	                    targetDay);
+
+
+	    if (dateElement == null) {
+
+	        throw new RuntimeException(
+	                "Target date "
+	                + targetDay
+	                + " not found inside "
+	                + targetMonth
+	                + ". Date may be disabled/unavailable.");
+	    }
+
+
+	    // ============================================================
+	    // SCROLL TO DATE
+	    // ============================================================
+
+	    ((JavascriptExecutor) driver)
+	            .executeScript(
+	                    "arguments[0].scrollIntoView({block:'center'});",
+	                    dateElement);
+
+	    Thread.sleep(300);
+
+
+	    // ============================================================
+	    // CLICK DATE
+	    // ============================================================
+
+	    try {
+
+	        wait.until(
+	                ExpectedConditions.elementToBeClickable(
+	                        dateElement));
+
+	        dateElement.click();
+
+	        System.out.println(
+	                "Date clicked normally.");
+
+	    } catch (Exception e) {
+
+	        System.out.println(
+	                "Normal date click failed. "
+	                + "Using JS click.");
+
+	        ((JavascriptExecutor) driver)
+	                .executeScript(
+	                        "arguments[0].click();",
+	                        dateElement);
+	    }
+
+
+	    System.out.println(
+	            "Successfully clicked date: "
+	            + targetDateString);
+
+
+	    Thread.sleep(500);
+
+
+	    // ============================================================
+	    // ROUND TRIP
+	    // ============================================================
+
+	    if (roundTrip) {
+
+	        System.out.println(
+	                "Round Trip = TRUE");
+
+	        System.out.println(
+	                "Departure selected.");
+
+	        System.out.println(
+	                "Calendar remains OPEN "
+	                + "for return date.");
+
+	        return;
+	    }
+
+
+	    // ============================================================
+	    // VERIFY DATE INPUT
+	    // ============================================================
+
+	    try {
+
+	        wait.until(driver -> {
+
+	            try {
+
+	                String value =
+	                        dateInput.getAttribute("value");
+
+
+	                System.out.println(
+	                        "Date input value = "
+	                        + value);
+
+
+	                return value != null
+	                        && value.contains(
+	                                String.valueOf(targetDay));
+
+	            } catch (StaleElementReferenceException e) {
+
+	                return false;
+	            }
+	        });
+
+	    } catch (Exception e) {
+
+	        System.out.println(
+	                "Date input verification failed: "
+	                + e.getMessage());
+	    }
+
+
+	    System.out.println(
+	            "Date selected successfully: "
+	            + dateInput.getAttribute("value"));
+	}	private void clickPreviousMonth(
+	        WebElement calendar,
+	        WebDriverWait wait) {
+
+	    By previousButton =
+	            By.xpath(
+	                    ".//button["
+	                    + ".//mat-icon["
+	                    + "normalize-space()='arrow_back'"
+	                    + " or normalize-space()='keyboard_arrow_left'"
+	                    + " or normalize-space()='chevron_left'"
+	                    + "]"
+	                    + "]");
+
+	    WebElement previous =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            calendar.findElement(
+	                                    previousButton)));
+
+	    ((JavascriptExecutor) driver)
+	            .executeScript(
+	                    "arguments[0].click();",
+	                    previous);
 	}
+	
+	private void clickNextMonth(
+	        WebElement calendar,
+	        WebDriverWait wait) {
 
+	    By nextButton =
+	            By.xpath(
+	                    ".//button["
+	                    + ".//mat-icon["
+	                    + "normalize-space()='arrow_forward'"
+	                    + " or normalize-space()='keyboard_arrow_right'"
+	                    + " or normalize-space()='chevron_right'"
+	                    + "]"
+	                    + "]");
 
+	    WebElement next =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            calendar.findElement(
+	                                    nextButton)));
 
+	    ((JavascriptExecutor) driver)
+	            .executeScript(
+	                    "arguments[0].click();",
+	                    next);
+	}
 	private YearMonth parseCalendarMonth(String calendarText) {
 
 	    // FORMAT 1: September 2026

@@ -31,55 +31,39 @@ public final class ExcelUtil {
     }
 
 
-
-    public static void openExcel(String sheetName) {
-
+    public static void openExcel(String excelPath, String sheetName) {
 
         try {
 
+            File file = new File(excelPath);
 
-            File file =
-                    new File(Ipathconstant. excelfile_path);
-
-
-            FileInputStream fis =
-                    new FileInputStream(file);
-
-
-
-            workbook =
-                    WorkbookFactory.create(fis);
-
-
-
-            sheet =
-                    workbook.getSheet(sheetName);
-
-
-
-            if(sheet == null) {
-
+            if (!file.exists()) {
                 throw new RuntimeException(
-                        "Sheet not found : "
-                        + sheetName);
+                        "Excel file not found : " + excelPath);
             }
 
+            FileInputStream fis = new FileInputStream(file);
 
+            workbook = WorkbookFactory.create(fis);
 
-        } catch(Exception e) {
+            sheet = workbook.getSheet(sheetName);
 
+            if (sheet == null) {
+                throw new RuntimeException(
+                        "Sheet not found : " + sheetName
+                        + " in file : " + excelPath);
+            }
+
+            System.out.println("Excel File : " + excelPath);
+            System.out.println("Sheet : " + sheet.getSheetName());
+
+        } catch (Exception e) {
 
             throw new RuntimeException(
-                    "Unable to open Excel File",
+                    "Unable to open Excel File : " + excelPath,
                     e);
-
         }
-
     }
-
-
-
-
     /**
      * Read Complete Excel Data
      */
