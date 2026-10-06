@@ -6,8 +6,8 @@
       <class name="flightBoookingTest.SaudiaBookingTest">
         <methods>
           <include name="tearDown"/>
-          <include name="CompnayProfile" invocation-numbers="0"/>
           <include name="setup"/>
+          <include name="flightBookingTest" invocation-numbers="3 5 7"/>
         </methods>
       </class> <!-- flightBoookingTest.SaudiaBookingTest -->
     </classes>
