@@ -37,7 +37,18 @@ public class FlightBookingData {
 	private final String Adult2PassportNumber;
 	private final String Adult2PassportExpiry;
 	private final String Adult2Issuingcountry;
-
+	private final String paymentMethod;
+	private final String CardNumber;
+	
+	private final String CardHolderName;
+	
+	private final String SecurityCode;
+	private final String Expirymonth;
+	private final String ExpiryYear;
+	
+	private final String OTP;
+	
+	
 	
 	
 	
@@ -79,7 +90,14 @@ public class FlightBookingData {
 			String Adult2Nationality,
 			String Adult2PassportNumber,
 			String Adult2PassportExpiry,
-			String Adult2Issuingcountry
+			String Adult2Issuingcountry,
+			String paymentMethod,
+			String CardNumber,
+			String CardHolderName,
+			String SecurityCode,
+			String Expirymonth,
+			String ExpiryYear,
+			String OTP
 			
 			
 			
@@ -121,7 +139,13 @@ public class FlightBookingData {
 		this.Adult2PassportNumber=Adult2PassportNumber;
 		this.Adult2PassportExpiry=Adult2PassportExpiry;
 		this.Adult2Issuingcountry=Adult2Issuingcountry;
-		
+		this.paymentMethod=paymentMethod;
+		this.CardNumber=CardNumber;
+		this.CardHolderName=CardHolderName;
+		this. SecurityCode= SecurityCode;
+		this.Expirymonth=Expirymonth;
+		this.ExpiryYear=ExpiryYear;
+		this.OTP=OTP;
 		
 		
 		
@@ -242,9 +266,39 @@ public class FlightBookingData {
 	        return Adult2Issuingcountry;
 	    }
 			
+	    public String getPaymentMethod() {
+	        return paymentMethod;
+	    }
+			
+	    public String getCardNumber() {
+	        return CardNumber;
+	    }
+			
+	    public String getCardHolderName() {
+	        return CardHolderName;
+	    }
+			
+	    public String getSecurityCode() {
+	        return SecurityCode;
+	    }
+			
+	    
+	    public String getExpirymonth() {
+	        return Expirymonth;
+	    }
+			
+	    public String getExpiryYear() {
+	        return ExpiryYear;
+	    }
+			
+		
+	    public String getOTP() {
+	        return OTP;
+	    }
 			
 			
 			
+				
 			
 			
 			

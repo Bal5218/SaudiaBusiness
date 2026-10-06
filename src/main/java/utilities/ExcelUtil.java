@@ -263,7 +263,15 @@ public final class ExcelUtil {
                  row[26].toString(),
                  row[27].toString(),
                  row[28].toString(),
-                 row[29].toString()
+                 row[29].toString(),
+                 row[30].toString(),
+                 row[31].toString(),
+                 row[32].toString(),
+                 row[33].toString(),
+                 row[34].toString(),
+                 row[35].toString(),
+                 row[36].toString()
+                 
                  
               
        
