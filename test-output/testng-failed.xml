@@ -7,7 +7,7 @@
         <methods>
           <include name="tearDown"/>
           <include name="setup"/>
-          <include name="flightBookingTest" invocation-numbers="3 5 7"/>
+          <include name="flightBookingTest" invocation-numbers="0"/>
         </methods>
       </class> <!-- flightBoookingTest.SaudiaBookingTest -->
     </classes>

@@ -64,5 +64,10 @@
     <version>5.1.2</version>
 </dependency>
 
+	<dependency>
+		<groupId>Danata</groupId>
+		<artifactId>Danata</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
 </dependencies>
 </project>

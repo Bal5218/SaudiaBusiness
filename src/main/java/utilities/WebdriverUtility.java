@@ -2449,4 +2449,28 @@ public class WebdriverUtility {
 	                    + dob
 	    );
 	    System.out.println("=================================");
-	}	}
+	}
+	
+
+	public void waitForLoaderToDisappear() throws TimeoutException {
+
+	    By loaderLocator =
+	            By.cssSelector("div.loader-overlay");
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(30));
+
+	    wait.until(
+		        ExpectedConditions.invisibilityOfElementLocated(
+		                loaderLocator
+		        )
+		);
+
+		System.out.println("Loader disappeared successfully.");
+	}
+
+
+
+
+
+}

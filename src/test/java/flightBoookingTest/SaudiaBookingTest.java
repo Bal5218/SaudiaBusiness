@@ -63,7 +63,7 @@ public class SaudiaBookingTest extends BaseClass {
     @Test(
     	    dataProvider = "FlightBookingData",
     	    dataProviderClass = DataproviderUtil.class,
-    	  retryAnalyzer = listeners.RetryAnalyser.class
+    	 retryAnalyzer = listeners.RetryAnalyser.class
     	)
     	public void flightBookingTest(
     	      FlightBookingData data) throws Throwable {

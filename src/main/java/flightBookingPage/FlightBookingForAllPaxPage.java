@@ -1,11 +1,13 @@
 package flightBookingPage;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -73,7 +75,12 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "(//mat-form-field[.//*[normalize-space()='Departure date']]//input)[2]")
 	private WebElement departureDateInput2;
+	
+	@FindBy(xpath = "(//mat-form-field[.//*[normalize-space()='Departure date']]//mat-icon)[3]")
+	private WebElement DepartureCalendaricon3;
 
+	@FindBy(xpath = "(//mat-form-field[.//*[normalize-space()='Departure date']]//input)[3]")
+	private WebElement departureDateInput3;
 
 	@FindBy(xpath = "//div[contains(@class,'calendar-popup')]//button[normalize-space()='Continue']")
 	private WebElement calendarContinueBtn;
@@ -119,6 +126,9 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "//div[@id='mat-autocomplete-2']")
 	private WebElement EmployeeDetailssuggestion;
+	
+	@FindBy(xpath = "//button[contains(@class,'add-multicity-flight') and .//span[normalize-space()='Add flight']]")
+	private WebElement AddFlightbtn;
 
 	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
 	private WebElement acceptCookieBtn;
@@ -241,17 +251,31 @@ private By termsCheckbox = By
 
 	@FindBy(xpath = "(//input[@formcontrolname='toLocationControl'])[2]")
 	private WebElement secondTotxtBox;
+	
+	@FindBy(xpath = "(//input[@formcontrolname='toLocationControl'])[3]")
+	private WebElement thirdTotxtBox;
 
 	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
 	private WebElement AdultApplyselectionbtn;
 	
 	//depaendent
-	@FindBy(xpath = "//button[text()='Add dependent  ']")
+	@FindBy(xpath = "//button[contains(normalize-space(.),'Add dependent')]")
 	private WebElement addDependentBtn;
+	
+	private By savedDependentsPopup =   By.xpath("//h3[normalize-space()='Saved Dependents']");
+	     
+	private By dependentSearchBox =    By.xpath("//mat-dialog-container//input");
+	    
+
 	
 	@FindBy(xpath = "//mat-dialog-actions//button[.//span[contains(@class,'mdc-button__label') and normalize-space()='Add']]")
 	private WebElement Addbtn;
 	
+	@FindBy(xpath = "(//div[contains(@class,'multicity-flight-view-button')]//button[.//span[normalize-space()='Select trip']])[1]")
+	private WebElement SelectTripbtn;
+	
+	@FindBy(xpath = "//button[contains(@class,'continue__cta') and .//span[normalize-space()='Select & Continue']]")
+	private WebElement selectAndContinueBtn;
 	
 	private By savedCardsHeader = By.xpath(
 		    "//mat-expansion-panel-header" +
@@ -327,370 +351,902 @@ private By termsCheckbox = By
 
 //			private By applySelectionBtn =
 //			        By.xpath("//button[normalize-space()='Apply selection']");
+	    
+	    
+	    public void FlightBookingForAllPax(FlightBookingData data) throws Throwable {
 
-	public void FlightBookingForAllPax(FlightBookingData data) throws Throwable {
-		
-		webdriverutility.click(saudiaLogo);
+	        // =====================================================
+	        // 1. GET BASIC DATA
+	        // =====================================================
 
-		String tripType = data.getTripType().trim();
+	        webdriverutility.click(saudiaLogo);
 
-		TripType(data);
+	        String tripType = data.getTripType().trim();
+	        String Traveller = data.getTravellerType().trim();
+	        String tripCategory = data.getTripCategory().trim();
 
-		Thread.sleep(3000);
-		if (tripType.equalsIgnoreCase("One Way")) {
-
-			selectDeparturecity(data);
-			Thread.sleep(3000);
-			selectArrivalcity(data);
-			
-			webdriverutility.click(acceptCookieBtn);
-
-			webdriverutility.selectPikadayDate(DepartureCalendaricon, departureDateInput, data.getDeparturedate(),
-					false,null);
-
-		} else if (tripType.equalsIgnoreCase("Round trip")) {
-
-			selectDeparturecity(data);
-Thread.sleep(6000);
-			selectArrivalcity(data);
-
-			webdriverutility.click(acceptCookieBtn);
-
-			webdriverutility.selectRoundTripDates(DepartureCalendaricon, data.getDeparturedate(), data.getReturndate());
-			webdriverutility.closeRoundTripCalendar();
-		}
-
-		else if (tripType.equalsIgnoreCase("Multi-city")) {
-
-			MultiCityDetails(data);
-		}
-
-		// Trip Type
-
-		// TripType(data);
-
-		// From Textbox
-
-		Thread.sleep(8000);
-
-		TravellerType(data);
-		String Traveller = data.getTravellerType().trim();
-
-		if (Traveller.equalsIgnoreCase("Employee")) {
-
-			String employeeEmail = data.getEmployeedetails().trim();
-
-			webdriverutility.sendKeys(EmployeeDetailsTextbox, employeeEmail);
-
-			By employeeSuggestion = By.xpath(
-					"//mat-option[@role='option']" + "[.//*[contains(normalize-space(),'" + employeeEmail + "')]]");
-
-			// Thread.sleep(4000);
-
-			webdriverutility.clickWithRetry(employeeSuggestion);
+	        System.out.println("========================================");
+	        System.out.println("TRIP TYPE      = " + tripType);
+	        System.out.println("TRAVELLER TYPE = " + Traveller);
+	        System.out.println("TRIP CATEGORY  = " + tripCategory);
+	        System.out.println("========================================");
 
 
+	        // =====================================================
+	        // 2. SELECT TRIP TYPE
+	        // =====================================================
 
-		}
+	        TripType(data);
 
-//	
-//	webdriverutility.scrollToTop();
-//	
-//   ReportUtil.logPass("search data is entered");
-		
-		
+	        Thread.sleep(3000);
 
-		webdriverutility.waitForVisibility(SearchFlightbtn);
 
-		ReportUtil.attachFullPageScreenshot(driver, "Search data is entered");
-		
-		Thread.sleep(7000);
+	        // =====================================================
+	        // 3. ENTER FLIGHT SEARCH DETAILS
+	        // =====================================================
 
-		clickSearchButton();
+	        if (tripType.equalsIgnoreCase("One Way")) {
+
+	            System.out.println("===== ONE WAY SEARCH =====");
+
+	            selectDeparturecity(data);
+
+	            Thread.sleep(3000);
+
+	            selectArrivalcity(data);
+
+	            webdriverutility.click(acceptCookieBtn);
+
+	            webdriverutility.selectPikadayDate(
+	                    DepartureCalendaricon,
+	                    departureDateInput,
+	                    data.getDeparturedate(),
+	                    false,
+	                    null
+	            );
+
+	        }
+
+	        else if (tripType.equalsIgnoreCase("Round trip")) {
+
+	            System.out.println("===== ROUND TRIP SEARCH =====");
+
+	            selectDeparturecity(data);
+
+	            Thread.sleep(6000);
+
+	            selectArrivalcity(data);
+
+	            webdriverutility.click(acceptCookieBtn);
+
+	            webdriverutility.selectRoundTripDates(
+	                    DepartureCalendaricon,
+	                    data.getDeparturedate(),
+	                    data.getReturndate()
+	            );
+
+	            webdriverutility.closeRoundTripCalendar();
+
+	        }
+
+	        else if (tripType.equalsIgnoreCase("Multi-city")) {
+
+	            System.out.println("===== MULTI-CITY SEARCH =====");
+
+	            MultiCityDetails(data);
+	        }
+
+	        else {
+
+	            throw new IllegalArgumentException(
+	                    "Unsupported trip type: " + tripType
+	            );
+	        }
+
+
+	        // =====================================================
+	        // 4. TRAVELLER TYPE
+	        // =====================================================
+
+	        Thread.sleep(8000);
+
+	        TravellerType(data);
+
+
+	        // =====================================================
+	        // 5. EMPLOYEE DETAILS
+	        // =====================================================
+
+	        if (Traveller.equalsIgnoreCase("Employee")) {
+
+	            String employeeEmail =
+	                    data.getEmployeedetails().trim();
+
+	            webdriverutility.sendKeys(
+	                    EmployeeDetailsTextbox,
+	                    employeeEmail
+	            );
+
+	            By employeeSuggestion = By.xpath(
+	                    "//mat-option[@role='option']"
+	                  + "[.//*[contains(normalize-space(),'"
+	                  + employeeEmail
+	                  + "')]]"
+	            );
+
+	            webdriverutility.clickWithRetry(
+	                    employeeSuggestion
+	            );
+	        }
+
+
+	        // =====================================================
+	        // 6. WAIT FOR SEARCH BUTTON
+	        // =====================================================
+
+	        webdriverutility.waitForVisibility(
+	                SearchFlightbtn
+	        );
+
+	        ReportUtil.attachFullPageScreenshot(
+	                driver,
+	                "Search data is entered"
+	        );
+
+	        Thread.sleep(7000);
+
+
+	        // =====================================================
+	        // 7. CLICK SEARCH FLIGHT
+	        // =====================================================
+
+	        clickSearchButton();
+
+
+	        // =====================================================
+	        // 8. RESULT PAGE FLOW
+	        // =====================================================
+
+	        if (tripType.equalsIgnoreCase("Multi-city")) {
+
+	            // =================================================
+	            // MULTI-CITY RESULT PAGE
+	            // =================================================
+
+	            System.out.println("========================================");
+	            System.out.println("MULTI-CITY RESULT FLOW");
+	            System.out.println("========================================");
+
+	            handleMultiCityResultFlow();
+
+
+	            // =================================================
+	            // AFTER SELECT & CONTINUE
+	            // WE ARE ON PASSENGER PAGE
+	            // =================================================
+
+	            System.out.println(
+	                    "Multi-city passenger page opened."
+	            );
+
+
+	            // =================================================
+	            // EMPLOYEE + FAMILY TRIP
+	            // =================================================
+
+	            if (Traveller.equalsIgnoreCase("Employee")
+	                    && tripCategory.equalsIgnoreCase("Family trip")) {
+
+	                System.out.println(
+	                        "Employee + Family Trip detected."
+	                );
+
+	                System.out.println(
+	                        "Waiting for Dependent section..."
+	                );
+
+	             
+
+
+	                // ---------------------------------------------
+	                // ADD DEPENDENTS FROM EXCEL
+	                // ---------------------------------------------
+Thread.sleep(3000);
+	                Adddependent(data);
+
+	                System.out.println(
+	                        "Multi-city dependents completed successfully."
+	                );
+	            }
+
+
+	            // =================================================
+	            // GUEST TRAVELER
+	            // =================================================
+
+	            else if (Traveller.equalsIgnoreCase("Guest traveler")) {
+
+	                System.out.println(
+	                        "Guest traveler detected."
+	                );
+
+	             Thread.sleep(3000)	  ;              Adultdetails(data);
+	            }
+
+
+	            // =================================================
+	            // CONTINUE TO PAYMENT
+	            // =================================================
+
+	            System.out.println(
+	                    "Waiting for Continue to Payment..."
+	            );
+
+	            WebDriverWait paymentWait =
+	                    new WebDriverWait(
+	                            driver,
+	                            Duration.ofSeconds(120)
+	                    );
+
+	            paymentWait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            ContinueToPaymentBtn
+	                    )
+	            );
+
+	            System.out.println(
+	                    "Continue to Payment is clickable."
+	            );
+
+	            ReportUtil.logPass(
+	                    "Passenger/Dependent details completed"
+	            );
+
+	            Thread.sleep(3000);
+
+	            webdriverutility.click(
+	                    ContinueToPaymentBtn
+	            );
+
+	            System.out.println(
+	                    "Continue to Payment clicked."
+	            );
+	        }
+
+
+	        // =====================================================
+	        // 9. ONE WAY / ROUND TRIP RESULT FLOW
+	        // =====================================================
+
+	        else {
+
+	            handleNormalFareFlow(tripType);
+
+
+	            // =================================================
+	            // PASSENGER PAGE
+	            // =================================================
+
+	            System.out.println(
+	                    "Passenger page opened."
+	            );
+
+
+	            // =================================================
+	            // EMPLOYEE + FAMILY TRIP
+	            // =================================================
+
+	            if (Traveller.equalsIgnoreCase("Employee")
+	                    && tripCategory.equalsIgnoreCase("Family trip")) {
+
+	                System.out.println(
+	                        "Employee + Family Trip detected."
+	                );
+
+	              Thread.sleep(3000);
+
+	                Adddependent(data);
+	            }
+
+
+	            // =================================================
+	            // GUEST TRAVELER
+	            // =================================================
+
+	            else if (Traveller.equalsIgnoreCase("Guest traveler")) {
+
+	                Adultdetails(data);
+	            }
+
+
+	            // =================================================
+	            // CONTINUE TO PAYMENT
+	            // =================================================
+
+	            webdriverutility.waitForVisibility(
+	                    ContinueToPaymentBtn
+	            );
+
+	            ReportUtil.logPass(
+	                    "Passenger details completed"
+	            );
+
+	            Thread.sleep(8000);
+
+	            webdriverutility.click(
+	                    ContinueToPaymentBtn
+	            );
+	        }
+
+
+	        // =====================================================
+	        // 10. PAYMENT PAGE
+	        // =====================================================
+
+	        webdriverutility.scrollToBottom();
+
+	        String parentWindow =
+	                driver.getWindowHandle();
+
+
+	        // =====================================================
+	        // 11. SELECT PAYMENT METHOD
+	        // =====================================================
+
+	        selectPaymentMethod(data);
+
+	        ReportUtil.logPass(
+	                "Payment page is displayed"
+	        );
+
+
+	        try {
+
+	            Thread.sleep(2000);
+
+	        } catch (InterruptedException e) {
+
+	            Thread.currentThread().interrupt();
+	        }
+
+
+	        // =====================================================
+	        // 12. HANDLE NEW WINDOW
+	        // =====================================================
+
+	        if (driver.getWindowHandles().size() > 1) {
+
+	            for (String window :
+	                    driver.getWindowHandles()) {
+
+	                if (!window.equals(parentWindow)) {
+
+	                    driver.switchTo().window(window);
+
+	                    System.out.println(
+	                            "New window found: "
+	                                    + driver.getCurrentUrl()
+	                    );
+
+	                    driver.close();
+
+	                    System.out.println(
+	                            "New window closed."
+	                    );
+
+	                    break;
+	                }
+	            }
+
+	            driver.switchTo().window(parentWindow);
+	        }
+
+
+	        // =====================================================
+	        // 13. BOOKING CONFIRMATION
+	        // =====================================================
+
+	        By bookingConfirmed = By.xpath(
+	                "//*[normalize-space()='Booking confirmed']"
+	        );
+
+	        WebDriverWait wait1 =
+	                new WebDriverWait(
+	                        driver,
+	                        Duration.ofSeconds(120)
+	                );
+
+	        wait1.until(
+	                ExpectedConditions.visibilityOfElementLocated(
+	                        bookingConfirmed
+	                )
+	        );
+
+	        System.out.println(
+	                "Booking confirmed successfully."
+	        );
+
+
+	        // =====================================================
+	        // 14. GET PNR
+	        // =====================================================
+
+	        WebElement pnrElement =
+	                wait1.until(
+	                        ExpectedConditions.visibilityOfElementLocated(
+	                                bookingReference
+	                        )
+	                );
+
+	        String pnr =
+	                pnrElement.getText().trim();
+
+	        System.out.println(
+	                "PNR = " + pnr
+	        );
+
+	        Assert.assertFalse(
+	                pnr.isEmpty(),
+	                "PNR was not generated."
+	        );
+
+	        ReportUtil.logPass(
+	                "PNR generated successfully: " + pnr
+	        );
+	    }
+	private void handleNormalFareFlow(
+	        String tripType) throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(
+	                    driver,
+	                    Duration.ofSeconds(60)
+	            );
+
+
+	    // =====================================================
+	    // WAIT FOR FLIGHT RESULTS
+	    // =====================================================
+
+	    wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    allExpandFareBtns
+	            )
+	    );
+
+
+	    System.out.println(
+	            "Flight results loaded."
+	    );
+
+
+	    printAllExpandButtons();
+
+	    clickExpandButton(0);
+
+
+	    System.out.println(
+	            "Flight 0 expanded."
+	    );
+
+	    System.out.println(
+	            "Waiting for Basic fare..."
+	    );
+
+
+	    // =====================================================
+	    // BASIC FARE
+	    // =====================================================
+
+	    WebDriverWait fareWait =
+	            new WebDriverWait(
+	                    driver,
+	                    Duration.ofSeconds(120)
+	            );
+
+
+	    fareWait.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    basicFareSelectBtn
+	            )
+	    );
+
+
+	    System.out.println(
+	            "Basic fare displayed."
+	    );
+
+
+	    ReportUtil.logPass(
+	            "Result page is displayed"
+	    );
+
+
+	    webdriverutility.click(
+	            basicFareSelectBtn
+	    );
+
+
+	    // =====================================================
+	    // ROUND TRIP - SECOND FLIGHT
+	    // =====================================================
+
+	    if (tripType.equalsIgnoreCase("Round trip")) {
+
+	        Thread.sleep(3000);
+
+	        printAllExpandButtons();
+
+	        clickExpandButton(1);
+
+	        Thread.sleep(2000);
+
+	        webdriverutility.waitForVisibility(
+	                basicFareSelectBtn
+	        );
+
+	        webdriverutility.clickWithRetry(
+	                basicFareSelectBtn
+	        );
+	    }
+
+
+	    // =====================================================
+	    // CONTINUE TO PASSENGER
+	    // =====================================================
+
+	    WebDriverWait wait3 =
+	            new WebDriverWait(
+	                    driver,
+	                    Duration.ofSeconds(120)
+	            );
+
+
+	    wait3.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    ContinueToPassengerBtn
+	            )
+	    );
+
+
+	    System.out.println(
+	            "Continue to Passenger is clickable."
+	    );
+
+
+	    webdriverutility.click(
+	            ContinueToPassengerBtn
+	    );
+
+
+	    System.out.println(
+	            "Passenger page opened."
+	    );
+	}	
 	
+private void handleMultiCityResultFlow() throws Throwable {
 
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+	    WebDriverWait wait =
+	            new WebDriverWait(
+	                    driver,
+	                    Duration.ofSeconds(60)
+	            );
 
-		try {
 
-		    wait.until(
-		        ExpectedConditions.visibilityOfElementLocated(
-		            allExpandFareBtns
-		        )
-		    );
+	    System.out.println(
+	            "========================================"
+	    );
 
-		    System.out.println("Flight results loaded");
+	    System.out.println(
+	            "       MULTI-CITY RESULT FLOW"
+	    );
 
-		} catch (TimeoutException e) {
+	    System.out.println(
+	            "========================================"
+	    );
 
-		    System.out.println("Flight results NOT loaded within 60 seconds");
 
-		    ReportUtil.attachFullPageScreenshot(
-		        driver,
-		        "Flight Result Timeout"
-		    );
+	    // =====================================================
+	    // 1. WAIT FOR SELECT TRIP
+	    // =====================================================
 
-		    throw e;
-		}
-		
-		printAllExpandButtons();
-		clickExpandButton(0);
+	    System.out.println(
+	            "Waiting for Select Trip button..."
+	    );
 
-		System.out.println("Flight 0 expanded. Waiting for Basic fare...");
+	    WebElement selectTrip =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            SelectTripbtn
+	                    )
+	            );
 
-		WebDriverWait fareWait =
-		        new WebDriverWait(driver, Duration.ofSeconds(120));
+	    System.out.println(
+	            "Select Trip button is visible."
+	    );
 
-		try {
 
-		    fareWait.until(
-		        ExpectedConditions.visibilityOfElementLocated(
-		            basicFareSelectBtn
-		        )
-		    );
+	    // Scroll
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            selectTrip
+	    );
 
-		    System.out.println("Basic fare displayed.");
+	    Thread.sleep(1000);
 
-		} catch (TimeoutException e) {
 
-		    System.out.println(
-		        "Basic fare NOT displayed after 120 seconds."
-		    );
+	    // =====================================================
+	    // 2. CLICK SELECT TRIP
+	    // =====================================================
 
-		    ReportUtil.attachFullPageScreenshot(
-		        driver,
-		        "Basic Fare Timeout"
-		    );
+	    try {
 
-		    throw e;
-		}
-		ReportUtil.logPass("Result page is displayed");
+	        selectTrip.click();
 
-		webdriverutility.click(basicFareSelectBtn);
+	    } catch (ElementClickInterceptedException e) {
 
-		if (tripType.equalsIgnoreCase("Round trip")) {
+	        System.out.println(
+	                "Select Trip normal click intercepted."
+	        );
 
-			Thread.sleep(3000);
+	        System.out.println(
+	                "Using JavaScript click."
+	        );
 
-		
-			printAllExpandButtons();
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                selectTrip
+	        );
+	    }
 
-			clickExpandButton(1);
 
-			Thread.sleep(2000);
+	    System.out.println(
+	            "Select Trip clicked successfully."
+	    );
 
-			webdriverutility.waitForVisibility(basicFareSelectBtn);
 
-			webdriverutility.clickWithRetry(basicFareSelectBtn);
-		} else if (tripType.equalsIgnoreCase("Multi-city")) {
+	    // =====================================================
+	    // 3. WAIT FOR SELECT & CONTINUE
+	    // =====================================================
 
-			Thread.sleep(3000);
+	    System.out.println(
+	            "Waiting for Select & Continue button..."
+	    );
 
-			printAllExpandButtons();
 
-			clickExpandButton(1);
+	    WebElement selectContinue =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            selectAndContinueBtn
+	                    )
+	            );
 
-			Thread.sleep(2000);
 
-			webdriverutility.waitForVisibility(basicFareSelectBtn);
+	    System.out.println(
+	            "Select & Continue button is visible."
+	    );
 
-			webdriverutility.clickWithRetry(basicFareSelectBtn);
 
-		}
-		WebDriverWait wait3 =
-		        new WebDriverWait(driver, Duration.ofSeconds(120));
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            selectContinue
+	    );
 
-		wait3.until(
-		    ExpectedConditions.elementToBeClickable(
-		        ContinueToPassengerBtn
-		    )
-		);
+	    Thread.sleep(1000);
 
-		System.out.println("Continue to Passenger is clickable.");
-		webdriverutility.click(ContinueToPassengerBtn);
 
-		System.out.println("Passenger page opened.");
+	    // =====================================================
+	    // 4. CLICK SELECT & CONTINUE
+	    // =====================================================
 
-		// Employee Family Trip
-		if (Traveller.equalsIgnoreCase("Employee")
-		        && data.getTripCategory().trim().equalsIgnoreCase("Family trip")) {
+	    try {
 
-			Adddependent(data);
-		}
+	        selectContinue.click();
 
-		// Guest traveler
-		if (Traveller.equalsIgnoreCase("Guest traveler")) {
-		    Adultdetails(data);
-		}
+	    } catch (ElementClickInterceptedException e) {
 
-		webdriverutility.waitForVisibility(ContinueToPaymentBtn);		
-	
-	ReportUtil.logPass("Dependents are selected");
-	
-Thread.sleep(8000);
-		webdriverutility.click(ContinueToPaymentBtn);
+	        System.out.println(
+	                "Select & Continue normal click intercepted."
+	        );
 
-		
+	        System.out.println(
+	                "Using JavaScript click."
+	        );
 
-		webdriverutility.scrollToBottom();
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                selectContinue
+	        );
+	    }
 
-		String parentWindow = driver.getWindowHandle();
 
-	//	wait.until(ExpectedConditions.elementToBeClickable(SdadRadiobtn))
-		
-	
-	//	webdriverutility.click(SdadRadiobtn);
-		
-		
-		
-		
-		selectPaymentMethod(data);
+	    System.out.println(
+	            "Select & Continue clicked successfully."
+	    );
 
 
-		ReportUtil.logPass("Payment page is displayed");
+	    
 
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
 
-		if (driver.getWindowHandles().size() > 1) {
+	    Thread.sleep(3000);
 
-			for (String window : driver.getWindowHandles()) {
-
-				if (!window.equals(parentWindow)) {
-
-					driver.switchTo().window(window);
-
-					System.out.println("New window found: " + driver.getCurrentUrl());
-
-					driver.close();
-
-					System.out.println("New window closed.");
-
-					break;
-				}
-			}
-
-			driver.switchTo().window(parentWindow);
-
-		}
-
-//		wait.until(ExpectedConditions.visibilityOfElementLocated(termsCheckbox));
-//
-//		wait.until(ExpectedConditions.elementToBeClickable(termsCheckbox));
-//
-//		webdriverutility.click(termsCheckbox);
-//
-//		wait.until(ExpectedConditions.elementToBeClickable(Paynowbtn));
-//
-//		webdriverutility.click(Paynowbtn);
-
-		// Wait until Booking Status page is reached
-//		WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(100));
-//		wait1.until(ExpectedConditions.urlContains("BookingStatus"));
-		
-		
-		By bookingConfirmed = By.xpath(
-		        "//*[normalize-space()='Booking confirmed']"
-		);
-
-		WebDriverWait wait1 =
-		        new WebDriverWait(driver, Duration.ofSeconds(120));
-
-		wait1.until(
-		        ExpectedConditions.visibilityOfElementLocated(bookingConfirmed)
-		);
-
-		System.out.println("Booking confirmed successfully.");
-
-//		// Now validate the hold message
-//		wait1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-//				"//div[contains(@class,'toast-msg__hold')]//span[normalize-space()='This booking is on hold.']")));
-
-//		Assert.assertTrue(driver.findElement(By
-//				.xpath("//div[contains(@class,'toast-msg__hold')]//span[normalize-space()='This booking is on hold.']"))
-//				.isDisplayed(), "Booking hold message is not displayed.");
-		WebElement pnrElement = wait1.until(
-			    ExpectedConditions.visibilityOfElementLocated(bookingReference)
-			);
-
-			String pnr = pnrElement.getText().trim();
-
-			System.out.println("PNR = " + pnr);
-
-			Assert.assertFalse(
-			    pnr.isEmpty(),
-			    "PNR was not generated."
-			);
-
-			ReportUtil.logPass(
-			    "PNR generated successfully: " + pnr
-			);
-		
+	    System.out.println(
+	            "Multi-city passenger page loading..."
+	    );
 	}
-
 
 	public void MultiCityDetails(FlightBookingData data) throws Throwable {
 
-		System.out.println("===== MULTI CITY BOOKING STARTED =====");
+	    System.out.println("===== MULTI CITY BOOKING STARTED =====");
 
-		System.out.println("----- SEGMENT 1 -----");
+	    // =====================================================
+	    // SEGMENT 1
+	    // =====================================================
 
-		System.out.println("From : " + data.getFrom());
-		System.out.println("To   : " + data.getTo());
-		System.out.println("Date : " + data.getDeparturedate());
+	    System.out.println("----- SEGMENT 1 -----");
 
-		// Select first From city
-		selectDeparturecity(data);
+	    System.out.println("From : " + data.getFrom());
+	    System.out.println("To   : " + data.getTo());
+	    System.out.println("Date : " + data.getDeparturedate());
 
-		Thread.sleep(3000);
+	    selectDeparturecity(data);
 
-		// Select first To city
-		selectArrivalcity(data);
+	    Thread.sleep(2000);
 
-		Thread.sleep(3000);
+	    selectArrivalcity(data);
 
-		// Wait for first departure date field
-		webdriverutility.waitForVisibility(departureDateInput);
-		webdriverutility.click(acceptCookieBtn);
-		// Select first departure date
-		webdriverutility.selectPikadayDate(DepartureCalendaricon, departureDateInput, data.getDeparturedate(), false,null);
+	    Thread.sleep(5000);
 
-		System.out.println("SEGMENT 1 DATE SELECTED = " + data.getDeparturedate());
+	    webdriverutility.selectPikadayDate(
+	            DepartureCalendaricon,
+	            departureDateInput,
+	            data.getDeparturedate(),
+	            false,
+	            null
+	    );
 
-		Thread.sleep(3000);
 
-		System.out.println("----- SEGMENT 2 -----");
+	    // =====================================================
+	    // ADDITIONAL SEGMENTS FROM EXCEL
+	    // =====================================================
 
-		System.out.println("To   : " + data.getMultiCityTo2());
+	    String[] toCities =
+	            data.getMultiCityTo().split(";");
 
-		System.out.println("Date : " + data.getMultiCityDepartureDate2());
+	    String[] dates =
+	            data.getMultiCityDepartureDate().split(";");
 
-		// Select second To city
-		selectCity(secondTotxtBox, data.getMultiCityTo2());
 
-		Thread.sleep(3000);
+	    // =====================================================
+	    // VALIDATE DATA
+	    // =====================================================
+webdriverutility.click(acceptCookieBtn);
+	    if (toCities.length != dates.length) {
 
-		webdriverutility.waitForVisibility(departureDateInput2);
+	        throw new RuntimeException(
+	                "Multi-city data mismatch. " +
+	                "Destinations = " + toCities.length +
+	                ", Dates = " + dates.length
+	        );
+	    }
 
-		System.out.println("Second departure date field is visible.");
 
-		System.out.println("Selecting Segment 2 date = " + data.getMultiCityDepartureDate2());
+	    // =====================================================
+	    // SEGMENT 2 / SEGMENT 3
+	    // =====================================================
 
-		// Select SECOND departure date
-		webdriverutility.selectPikadayDate(DepartureCalendaricon2, departureDateInput2,
-				data.getMultiCityDepartureDate2(), false,  data.getDeparturedate());
+	    for (int i = 0; i < toCities.length; i++) {
 
-		System.out.println("SEGMENT 2 DATE SELECTED = " + data.getMultiCityDepartureDate2());
+	        String destination = toCities[i].trim();
 
-		Thread.sleep(2000);
+	        String date = dates[i].trim();
 
-		System.out.println("===== MULTI CITY BOOKING COMPLETED =====");
+	        int segmentNumber = i + 2;
 
+
+	        System.out.println(
+	                "----- SEGMENT " + segmentNumber + " -----"
+	        );
+
+	        System.out.println(
+	                "To   : " + destination
+	        );
+
+	        System.out.println(
+	                "Date : " + date
+	        );
+
+
+	        // =================================================
+	        // SEGMENT 2
+	        // =================================================
+
+	        if (segmentNumber == 2) {
+
+	            selectCity(
+	                    secondTotxtBox,
+	                    destination
+	            );
+
+	            webdriverutility.selectPikadayDate(
+	                    DepartureCalendaricon2,
+	                    departureDateInput2,
+	                    date,
+	                    false,
+	                    data.getDeparturedate()
+	            );
+	        }
+
+
+	        // =================================================
+	        // SEGMENT 3
+	        // =================================================
+
+	        else if (segmentNumber == 3) {
+
+	            // ---------------------------------------------
+	            // CLICK ADD FLIGHT
+	            // ---------------------------------------------
+
+	            System.out.println("Adding Segment 3...");
+
+	            WebDriverWait wait =
+	                    new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(AddFlightbtn)
+	            );
+
+	            AddFlightbtn.click();
+
+	            System.out.println("Add Flight clicked successfully");
+
+
+	            // ---------------------------------------------
+	            // WAIT FOR SEGMENT 3 TO APPEAR
+	            // ---------------------------------------------
+
+	            wait.until(
+	                    ExpectedConditions.visibilityOf(thirdTotxtBox)
+	            );
+
+	            System.out.println("Segment 3 opened successfully");
+
+
+	            // ---------------------------------------------
+	            // SELECT SEGMENT 3 DESTINATION
+	            // ---------------------------------------------
+
+	            selectCity(
+	                    thirdTotxtBox,
+	                    destination
+	            );
+
+
+	            // ---------------------------------------------
+	            // SELECT SEGMENT 3 DATE
+	            // ---------------------------------------------
+
+	            webdriverutility.selectPikadayDate(
+	                    DepartureCalendaricon3,
+	                    departureDateInput3,
+	                    date,
+	                    false,
+	                    dates[i - 1]
+	            );
+	        }
+	        
+	    }
+
+
+	    System.out.println(
+	            "===== MULTI CITY BOOKING COMPLETED ====="
+	    );
+//	    webdriverutility.click(SelectTripbtn);
+//	    
+//	    Thread.sleep(5000);
+//	    webdriverutility.click(selectAndContinueBtn);
 	}
-
 	public void TripType(FlightBookingData data) throws Throwable {
 
 		String tripdetails = data.getTripType().trim();
@@ -958,11 +1514,7 @@ Thread.sleep(8000);
 
 	     // ---------------------------------------------------------
 	     // 3. BUSINESS TRIP
-	     // ---------------------------------------------------------
-	     // Business trip is automatically selected/displayed
-	     // for Guest traveler.
-	     // There is NO radio button to click.
-
+	    
 	     By businessTripText = By.xpath(
 	             "//*[normalize-space()='Business trip']"
 	     );
@@ -1399,501 +1951,410 @@ Thread.sleep(8000);
 ReportUtil.logPass("These Dependents are going to Add");
 	    System.out.println("Review clicked.");
 	}
-	public void Adddependent(FlightBookingData data) throws Throwable {
 
-	    int adults = parsePassengerCount(data.getAdults());
-	    int children = parsePassengerCount(data.getChildren());
-	    int infants = parsePassengerCount(data.getInfant());
 
-	    System.out.println("Adults   = " + adults);
-	    System.out.println("Children = " + children);
-	    System.out.println("Infants  = " + infants);
-
-	    if (adults > 0) {
-
-	        System.out.println("Adults > 1. Clicking Add dependent.");
-
-	        WebDriverWait wait =
-	                new WebDriverWait(driver, Duration.ofSeconds(30));
-
-	        // IMPORTANT:
-	        // Re-locate Add dependent from the CURRENT DOM
-	        WebElement addDependent = wait.until(
-	                ExpectedConditions.elementToBeClickable(
-	                        addDependentBtn
-	                )
-	        );
-
-	        // Scroll current element into view
-	        ((JavascriptExecutor) driver).executeScript(
-	                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
-	                addDependent
-	        );
-
-	        Thread.sleep(500);
-
-	        // Re-locate AGAIN because Angular may refresh the DOM
-	        addDependent = wait.until(
-	                ExpectedConditions.elementToBeClickable(
-	                        addDependentBtn
-	                )
-	        );
-
-	        try {
-
-	            addDependent.click();
-
-	            System.out.println(
-	                    "Add dependent clicked successfully."
-	            );
-
-	        } catch (StaleElementReferenceException e) {
-
-	            System.out.println(
-	                    "Add dependent became stale. Re-locating..."
-	            );
-
-	            // Find a completely fresh element
-	            addDependent = wait.until(
-	                    ExpectedConditions.elementToBeClickable(
-	                            addDependentBtn
-	                    )
-	            );
-
-	            ((JavascriptExecutor) driver).executeScript(
-	                    "arguments[0].click();",
-	                    addDependent
-	            );
-
-	            System.out.println(
-	                    "Add dependent clicked using fresh element."
-	            );
-	        }
-
-	        // Wait for Saved Dependents popup
-	        wait.until(
-	                ExpectedConditions.visibilityOfElementLocated(
-	                        By.xpath(
-	                                "//h3[normalize-space()='Saved Dependents']"
-	                        )
-	                )
-	        );
-
-	        System.out.println(
-	                "Saved Dependents popup opened."
-	        );
-
-	     // Select required adults
-	        if (adults > 1) {
-	            selectAdultCheckboxes(adults);
-	        }
-
-	        // Select required children
-	        if (children > 0) {
-	            selectChildCheckboxes(children);
-	        }
-
-	        // Assign status to selected adults
-	        if (adults > 0) {
-	            selectPriorityForAllAdults(adults);
-	        }
-
-	        // Assign status to selected children
-	        if (children > 0) {
-	            selectPriorityForAllChildren(children);
-	        }
-
-	        // Review
-	    //   webdriverutility.click(Addbtn);
-	       clickReview();
-	       webdriverutility.click(Addbtn);
-	       
-	    }
-	}
-	private void selectPriorityForAllChildren(int numberOfChildren)
-	        throws Throwable {
-
-	    for (int i = 1; i <= numberOfChildren; i++) {
-
-	        System.out.println(
-	                "Assigning status to selected child: Child - "
-	                        + i
-	        );
-
-	        selectChildPriority(i, i);
-	    }
-
-	    System.out.println(
-	            "Status assigned to all selected children."
-	    );
-	}
-	private void selectChildPriority(int childIndex, int priority)
-	        throws Throwable {
-
-	    WebDriverWait wait =
-	            new WebDriverWait(driver, Duration.ofSeconds(20));
-
-	    System.out.println(
-	            "Selecting status for Child "
-	                    + childIndex
-	                    + " = Child - "
-	                    + priority
-	    );
-
-	    // Find all Status controls
-	    By statusLocator = By.xpath(
-	            "//div[contains(@class,'delete-passenger-form-wrapper')]"
-	          + "//*[normalize-space()='Status']"
-	    );
-
-	    List<WebElement> statusElements = wait.until(
-	            ExpectedConditions.visibilityOfAllElementsLocatedBy(
-	                    statusLocator
-	            )
-	    );
-
-	    System.out.println(
-	            "Total Status controls found = "
-	                    + statusElements.size()
-	    );
-
-	}
-	
-	private void selectChildCheckboxes(int numberOfChildren) throws Throwable {
+	private void Adddependent(
+	        String dependentNames,
+	        String priorities) throws Throwable {
 
 	    WebDriverWait wait =
 	            new WebDriverWait(driver, Duration.ofSeconds(30));
 
-	    By childCheckboxesLocator = By.xpath(
-	        "//div[contains(@class,'delete-passenger-form-wrapper')]"
-	      + "//*[contains(normalize-space(.),'Child')]/ancestor::*[.//mat-checkbox][1]"
-	      + "//mat-checkbox"
-	    );
+	    // =====================================================
+	    // 1. ADD DEPENDENT BUTTON
+	    // =====================================================
 
-	    List<WebElement> childCheckboxes = wait.until(
-	        ExpectedConditions.presenceOfAllElementsLocatedBy(
-	            childCheckboxesLocator
-	        )
-	    );
+	    By addDependentLocator =
+	            By.xpath("//button[contains(normalize-space(.),'Add dependent')]");
 
-	    System.out.println(
-	        "Total child checkboxes found = "
-	        + childCheckboxes.size()
-	    );
+	    By loaderLocator =
+	            By.cssSelector("div.loader-overlay");
 
-	    System.out.println(
-	        "Number of children required = "
-	        + numberOfChildren
-	    );
+	    System.out.println("========================================");
+	    System.out.println("Waiting for Add dependent section...");
+	    System.out.println("========================================");
 
-	    if (numberOfChildren > childCheckboxes.size()) {
-	        throw new RuntimeException(
-	            "Required child checkboxes = "
-	            + numberOfChildren
-	            + ", but only "
-	            + childCheckboxes.size()
-	            + " child checkboxes are available."
-	        );
-	    }
-
-	    for (int i = 0; i < numberOfChildren; i++) {
-
-	        WebElement checkbox = childCheckboxes.get(i);
-
-	        ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            checkbox
-	        );
-
-	        wait.until(
-	            ExpectedConditions.elementToBeClickable(checkbox)
-	        );
-
-	        if (!checkbox.isSelected()) {
-
-	            try {
-	                checkbox.click();
-
-	            } catch (ElementClickInterceptedException e) {
-
-	                ((JavascriptExecutor) driver).executeScript(
-	                    "arguments[0].click();",
-	                    checkbox
-	                );
-	            }
-	        }
-
-	        System.out.println(
-	            "Child checkbox "
-	            + (i + 1)
-	            + " selected."
-	        );
-	    }
-	}
-	private void selectDependent(int dependentNumber, int priority)
-	        throws Throwable {
-
-	    WebDriverWait wait =
-	            new WebDriverWait(driver, Duration.ofSeconds(30));
-
-	    System.out.println(
-	            "Selecting dependent. Index = " + dependentNumber
-	                    + " | Priority = " + priority
-	    );
-
-	    // 1. Click Add dependent
+	    // Wait until page loader disappears
 	    wait.until(
-	            ExpectedConditions.elementToBeClickable(addDependentBtn)
+	            ExpectedConditions.invisibilityOfElementLocated(
+	                    loaderLocator
+	            )
 	    );
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            addDependentBtn
-	    );
+	    System.out.println("Loader disappeared.");
 
-	    try {
-
-	        addDependentBtn.click();
-
-	    } catch (ElementClickInterceptedException e) {
-
-	        System.out.println(
-	                "Normal Add dependent click failed. Using JS click."
-	        );
-
-	        ((JavascriptExecutor) driver).executeScript(
-	                "arguments[0].click();",
-	                addDependentBtn
-	        );
-	    }
-
-	    System.out.println("Add dependent clicked.");
-
-	    // 2. Wait for Saved Dependents popup
-	    wait.until(
-	            ExpectedConditions.visibilityOfElementLocated(
-	                    By.xpath(
-	                            "//h3[normalize-space()='Saved Dependents']"
+	    // Get fresh Add dependent button
+	    WebElement addDependent =
+	            wait.until(
+	                    ExpectedConditions.refreshed(
+	                            ExpectedConditions.elementToBeClickable(
+	                                    addDependentLocator
+	                            )
 	                    )
-	            )
-	    );
+	            );
 
-	    System.out.println(
-	            "Saved Dependents popup opened."
-	    );
+	    System.out.println("Add dependent button is ready.");
 
-	    // 3. Select required checkboxes
-	    selectAdultCheckboxes(dependentNumber);
-
-	    System.out.println(
-	            "Checkboxes selected = " + dependentNumber
-	    );
-
-	    // 4. Select status for each selected adult
-	    for (int i = 1; i <= dependentNumber; i++) {
-
-	        System.out.println(
-	                "Selecting status for Adult " + i
-	        );
-
-	        selectPriority(i, i);
-	    }
-
-	    // 5. Click Review
-	    clickReview();
-
-	    System.out.println(
-	            "Dependent assignment completed."
-	    );
-	}
-	
-	private void selectPriority(int adultIndex, int priority) throws Throwable {
-
-	    WebDriverWait wait =
-	            new WebDriverWait(driver, Duration.ofSeconds(20));
-
-	    System.out.println(
-	            "Selecting status for Adult " + adultIndex
-	                    + " = Adult - " + priority
-	    );
-
-	 
-	    By statusLocator = By.xpath(
-	            "//div[contains(@class,'delete-passenger-form-wrapper')]"
-	          + "//*[normalize-space()='Status']"
-	    );
-
-	    List<WebElement> statusElements = wait.until(
-	            ExpectedConditions.visibilityOfAllElementsLocatedBy(
-	                    statusLocator
-	            )
-	    );
-
-	    System.out.println(
-	            "Total Status controls found = "
-	                    + statusElements.size()
-	    );
-
-	    if (adultIndex > statusElements.size()) {
-
-	        throw new RuntimeException(
-	                "Cannot select status for Adult "
-	                + adultIndex
-	                + ". Only "
-	                + statusElements.size()
-	                + " Status controls found."
-	        );
-	    }
-
-	    // adultIndex is 1-based
-	    WebElement status = statusElements.get(adultIndex - 1);
-
+	    // Scroll to button
 	    ((JavascriptExecutor) driver).executeScript(
 	            "arguments[0].scrollIntoView({block:'center'});",
-	            status
+	            addDependent
 	    );
 
 	    Thread.sleep(500);
 
-	    /*
-	     * Click the actual Status text/control.
-	     */
-	    try {
-
-	        wait.until(
-	                ExpectedConditions.elementToBeClickable(status)
-	        );
-
-	        status.click();
-
-	    } catch (Exception e) {
-
-	        System.out.println(
-	                "Normal Status click failed. Using JS click."
-	        );
-
-	        ((JavascriptExecutor) driver).executeScript(
-	                "arguments[0].click();",
-	                status
-	        );
-	    }
-
-	    System.out.println(
-	            "Status dropdown opened for Adult "
-	                    + adultIndex
-	    );
-
-	  
-	    By priorityOption = By.xpath(
-	            "//mat-option[@role='option']"
-	          + "[normalize-space(.)='Adult - "
-	          + priority
-	          + "']"
-	    );
-
-	    WebElement option = wait.until(
-	            ExpectedConditions.elementToBeClickable(
-	                    priorityOption
+	    // Check loader again after scroll/render
+	    wait.until(
+	            ExpectedConditions.invisibilityOfElementLocated(
+	                    loaderLocator
 	            )
 	    );
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            option
-	    );
+	    // Get fresh element again
+	    addDependent =
+	            wait.until(
+	                    ExpectedConditions.refreshed(
+	                            ExpectedConditions.elementToBeClickable(
+	                                    addDependentLocator
+	                            )
+	                    )
+	            );
 
-	    option.click();
+	    // Click Add dependent
+	    try {
 
-	    System.out.println(
-	            "Priority selected successfully: Adult - "
-	                    + priority
-	    );
-	}
-	public void selectAdultCheckboxes(int numberOfAdults) throws Throwable {
+	        addDependent.click();
 
-	    WebDriverWait wait =
-	            new WebDriverWait(driver, Duration.ofSeconds(30));
-//
-//	    // Wait until Add Dependent popup is displayed
-//	    wait.until(ExpectedConditions.visibilityOfElementLocated(
-//	            By.xpath("//h3[normalize-space()='Saved Dependents']")));
-
-	    By adultCheckboxesLocator = By.xpath(
-	            "//div[contains(@class,'delete-passenger-form-wrapper')]"
-	          + "//mat-checkbox"
-	    );
-
-	    List<WebElement> checkboxes = wait.until(
-	            ExpectedConditions.presenceOfAllElementsLocatedBy(
-	                    adultCheckboxesLocator));
-
-	    System.out.println("Total checkboxes found = " + checkboxes.size());
-	           
-
-	    System.out.println("Number of adults required = " + numberOfAdults);
-	           
-
-	    if (numberOfAdults > checkboxes.size()) {
-	        throw new RuntimeException(          "Required adult checkboxes = " + numberOfAdults  + ", but only " + checkboxes.size()+ " checkboxes are available."	       
-	                
+	        System.out.println(
+	                "Add dependent clicked successfully."
 	        );
-		             
 
+	    } catch (ElementClickInterceptedException e) {
+
+	        System.out.println(
+	                "Add dependent click intercepted."
+	        );
+
+	        System.out.println(
+	                "Waiting for loader to disappear..."
+	        );
+
+	        // Wait for overlay to disappear
+	        wait.until(
+	                ExpectedConditions.invisibilityOfElementLocated(
+	                        loaderLocator
+	                )
+	        );
+
+	        // Re-locate fresh button
+	        addDependent =
+	                wait.until(
+	                        ExpectedConditions.refreshed(
+	                                ExpectedConditions.elementToBeClickable(
+	                                        addDependentLocator
+	                                )
+	                        )
+	                );
+
+	        addDependent.click();
+
+	        System.out.println(
+	                "Add dependent clicked successfully after loader disappeared."
+	        );
 	    }
 
-	    // Select checkbox according to number of adults
-	    for (int i = 0; i < numberOfAdults; i++) {
+	    // =====================================================
+	    // 2. WAIT FOR SAVED DEPENDENTS POPUP
+	    // =====================================================
 
-	        WebElement checkbox = checkboxes.get(i);
+	    wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    savedDependentsPopup
+	            )
+	    );
 
-	        ((JavascriptExecutor) driver).executeScript(
-	                "arguments[0].scrollIntoView({block:'center'});",
-	                checkbox
+	    System.out.println(
+	            "Saved Dependents popup opened successfully."
+	    );
+
+	    // =====================================================
+	    // 3. READ EXCEL DATA
+	    // =====================================================
+
+	    String[] names =
+	            dependentNames.split(";");
+
+	    String[] priorityList =
+	            priorities.split(";");
+
+	    // Validate names and priorities
+	    if (names.length != priorityList.length) {
+
+	        throw new RuntimeException(
+	                "Dependent data mismatch. Names = "
+	                        + names.length
+	                        + ", Priorities = "
+	                        + priorityList.length
+	        );
+	    }
+
+	    // =====================================================
+	    // 4. PROCESS EACH DEPENDENT
+	    // =====================================================
+
+	    for (int i = 0; i < names.length; i++) {
+
+	        String name =
+	                names[i].trim();
+
+	        String priority =
+	                priorityList[i].trim();
+
+	        System.out.println("================================");
+	        System.out.println(
+	                "Processing name = " + name
+	        );
+	        System.out.println(
+	                "Processing priority = " + priority
+	        );
+	        System.out.println("================================");
+
+	        // =================================================
+	        // SEARCH DEPENDENT
+	        // =================================================
+
+	        WebElement searchBox =
+	                wait.until(
+	                        ExpectedConditions.elementToBeClickable(
+	                                dependentSearchBox
+	                        )
+	                );
+
+	        searchBox.click();
+
+	        searchBox.sendKeys(
+	                Keys.CONTROL,
+	                "a"
 	        );
 
-	        wait.until(ExpectedConditions.elementToBeClickable(checkbox));
-Thread.sleep(5000);	        // Select only if not already selected
-	        if (!checkbox.isSelected()) {
+	        searchBox.sendKeys(
+	                Keys.BACK_SPACE
+	        );
 
-	            try {
-	                checkbox.click();
+	        Thread.sleep(300);
 
-	            } catch (ElementClickInterceptedException e) {
+	        searchBox.sendKeys(name);
 
-	                System.out.println(
-	                        "Normal click intercepted for checkbox "
-	                        + (i + 1) + ". Using JS click."
+	        System.out.println(
+	                "Entered search = " + name
+	        );
+
+	        // =================================================
+	        // SELECT DEPENDENT FROM AUTOCOMPLETE
+	        // =================================================
+
+	        By dependentOption =
+	                By.xpath(
+	                        "//mat-option[@role='option']"
+	                      + "[.//strong[contains("
+	                      + "translate(normalize-space(.),"
+	                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                      + "'abcdefghijklmnopqrstuvwxyz'),"
+	                      + "translate('"
+	                      + name
+	                      + "',"
+	                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                      + "'abcdefghijklmnopqrstuvwxyz')"
+	                      + ")]]"
 	                );
 
-	                ((JavascriptExecutor) driver).executeScript(
-	                        "arguments[0].click();",
-	                        checkbox
+	        WebElement result =
+	                wait.until(
+	                        ExpectedConditions.elementToBeClickable(
+	                                dependentOption
+	                        )
 	                );
+
+	        result.click();
+
+	        System.out.println(
+	                "Autocomplete clicked for = " + name
+	        );
+
+	        Thread.sleep(500);
+
+	        // =================================================
+	        // FIND DEPENDENT ROW
+	        // =================================================
+
+	        WebElement row =
+	                wait.until(
+	                        ExpectedConditions.visibilityOfElementLocated(
+	                                By.xpath(
+	                                        "//div[contains(@class,'passenger-list')][contains("
+	                                      + "translate(.,"
+	                                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                                      + "'abcdefghijklmnopqrstuvwxyz'),"
+	                                      + "translate('"
+	                                      + name
+	                                      + "',"
+	                                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                                      + "'abcdefghijklmnopqrstuvwxyz')"
+	                                      + ")]"
+	                                )
+	                        )
+	                );
+
+	        System.out.println(
+	                "Dependent row found for = " + name
+	        );
+
+	        // =================================================
+	        // CLICK STATUS / PRIORITY DROPDOWN
+	        // =================================================
+
+	        WebElement status =
+	                wait.until(
+	                        ExpectedConditions.elementToBeClickable(
+	                                By.xpath(
+	                                        "//div[contains(@class,'delete-passenger-form-list')][contains("
+	                                      + "translate(normalize-space(.),"
+	                                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                                      + "'abcdefghijklmnopqrstuvwxyz'),"
+	                                      + "translate('"
+	                                      + name
+	                                      + "',"
+	                                      + "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+	                                      + "'abcdefghijklmnopqrstuvwxyz')"
+	                                      + ")]"
+	                                      + "//mat-select"
+	                                )
+	                        )
+	                );
+
+	        status.click();
+
+	        System.out.println(
+	                "Status clicked for = " + name
+	        );
+
+	        Thread.sleep(500);
+
+	        // =================================================
+	        // FIND PRIORITY OPTION
+	        // =================================================
+
+	        List<WebElement> options =
+	                driver.findElements(
+	                        By.xpath(
+	                                "//mat-option[@role='option']"
+	                        )
+	                );
+
+	        WebElement requiredOption = null;
+
+	        String uiPriority =
+	                priority.replace("-", " - ");
+
+	        for (WebElement option : options) {
+
+	            if (!option.isDisplayed()) {
+	                continue;
+	            }
+
+	            String optionText =
+	                    option.getText()
+	                            .replace("\u00A0", " ")
+	                            .replaceAll("\\s+", " ")
+	                            .trim();
+
+	            System.out.println(
+	                    "Available option = ["
+	                            + optionText
+	                            + "]"
+	            );
+
+	            if (optionText.equalsIgnoreCase(
+	                    uiPriority)) {
+
+	                requiredOption = option;
+	                break;
 	            }
 	        }
 
+	        // =================================================
+	        // VALIDATE PRIORITY
+	        // =================================================
+
+	        if (requiredOption == null) {
+
+	            throw new RuntimeException(
+	                    "Priority not found = "
+	                            + uiPriority
+	                            + " for "
+	                            + name
+	            );
+	        }
+
+	        // =================================================
+	        // SELECT PRIORITY
+	        // =================================================
+
+	        requiredOption.click();
+
 	        System.out.println(
-	                "Adult checkbox " + (i + 1) + " selected."
-	        );
-	    }
-	}
-	private void selectPriorityForAllAdults(int numberOfAdults)
-	        throws Throwable {
-
-	    for (int i = 1; i <= numberOfAdults; i++) {
-
-	        System.out.println(
-	                "Assigning status to selected adult: Adult - "
-	                        + i
+	                "Priority selected = "
+	                        + priority
+	                        + " for "
+	                        + name
 	        );
 
-	        selectPriority(i, i);
+	        Thread.sleep(500);
 	    }
 
 	    System.out.println(
-	            "Status assigned to all selected adults."
+	            "========================================"
 	    );
+
+	    System.out.println(
+	            "All dependents processed successfully."
+	    );
+
+	    System.out.println(
+	            "========================================"
+	    );
+	
+	    // ==========================================
+	    // 8. REVIEW
+	    // ==========================================
+
+	    wait.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    By.xpath(
+	                            "//button[normalize-space()='Review']"
+	                    )
+	            )
+	    ).click();
+
+	    System.out.println(
+	            "All Excel dependents selected successfully."
+	    );
+	    webdriverutility.click(Addbtn);
 	}
+	
+	private void Adddependent(FlightBookingData data)
+	        throws Throwable {
+
+	    String dependentNames = data.getdependentName();
+	    String priorities = data.getPriority();
+
+	    Adddependent(dependentNames, priorities);
+	}
+
+	
+	
+	
+	
 	public void selectPaymentMethod(FlightBookingData data) throws Throwable {
 
 	    String paymentMethod = data.getPaymentMethod().trim();
@@ -1921,6 +2382,7 @@ Thread.sleep(5000);	        // Select only if not already selected
 	    }
 	    
 	}
+	
 	private void selectSavedCard(FlightBookingData data) throws Throwable {
 
 	    WebDriverWait wait =
@@ -1990,53 +2452,53 @@ Thread.sleep(5000);	        // Select only if not already selected
 
 	    payNow.click();
 
-	    System.out.println("Pay Now clicked.");
-
-
-
-	    wait.until(
-	            ExpectedConditions.frameToBeAvailableAndSwitchToIt(
-	                    By.id("Cardinal-CCA-IFrame")
-	            )
-	    );
-
-	    System.out.println("Switched to Cardinal OTP iframe.");
-
-
-	
-
-	    WebElement otpBox = wait.until(
-	            ExpectedConditions.visibilityOfElementLocated(
-	                    By.xpath("//input[@name='challengeDataEntry']")
-	            )
-	    );
-
-	    String otp = data.getOTP().trim();
-
-	    System.out.println("OTP = " + otp);
-
-	    otpBox.clear();
-	    otpBox.sendKeys(otp);
-
-	    System.out.println("OTP entered successfully.");
-
-
-	    WebElement submit = wait.until(
-	            ExpectedConditions.elementToBeClickable(
-	                    By.xpath("//input[@type='submit' and @value='SUBMIT']")
-	            )
-	    );
-
-	    submit.click();
-
-	    System.out.println("OTP Submit clicked.");
-
-
-	  
-	    driver.switchTo().defaultContent();
-
-	    System.out.println("Switched back to main page.");
-
+//	    System.out.println("Pay Now clicked.");
+//
+//
+//
+//	    wait.until(
+//	            ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+//	                    By.id("Cardinal-CCA-IFrame")
+//	            )
+//	    );
+//
+//	    System.out.println("Switched to Cardinal OTP iframe.");
+//
+//
+//	
+//
+//	    WebElement otpBox = wait.until(
+//	            ExpectedConditions.visibilityOfElementLocated(
+//	                    By.xpath("//input[@name='challengeDataEntry']")
+//	            )
+//	    );
+//
+//	    String otp = data.getOTP().trim();
+//
+//	    System.out.println("OTP = " + otp);
+//
+//	    otpBox.clear();
+//	    otpBox.sendKeys(otp);
+//
+//	    System.out.println("OTP entered successfully.");
+//
+//
+//	    WebElement submit = wait.until(
+//	            ExpectedConditions.elementToBeClickable(
+//	                    By.xpath("//input[@type='submit' and @value='SUBMIT']")
+//	            )
+//	    );
+//
+//	    submit.click();
+//
+//	    System.out.println("OTP Submit clicked.");
+//
+//
+//	  
+//	    driver.switchTo().defaultContent();
+//
+//	    System.out.println("Switched back to main page.");
+//
 
 
 	    By bookingConfirmed =
@@ -2050,8 +2512,8 @@ Thread.sleep(5000);	        // Select only if not already selected
 
 	    System.out.println("Booking confirmed successfully.");
 	}
-
-
+	
+	
 	private void selectSadad() throws Throwable {
 
 	    WebDriverWait wait =
@@ -2126,7 +2588,7 @@ Thread.sleep(5000);   wait.until(ExpectedConditions.visibilityOfElementLocated(B
 			);
 	
 	}
-
+	
 	private void selectOthersCard(FlightBookingData data) throws Throwable {
 
 	    WebDriverWait wait =

@@ -13,8 +13,8 @@ public class FlightBookingData {
 	private final String Employeedetails;
 	
 	private final String TripCategory;
-	private final String MultiCityTo2;
-	private final String MultiCityDepartureDate2;
+	private final String MultiCityTo;
+	private final String MultiCityDepartureDate;
 	private final String Adults;
 	private final String Children;
 	private final String Infant;
@@ -37,6 +37,9 @@ public class FlightBookingData {
 	private final String Adult2PassportNumber;
 	private final String Adult2PassportExpiry;
 	private final String Adult2Issuingcountry;
+	private final String dependentName;
+	private final String Priority;
+	
 	private final String paymentMethod;
 	private final String CardNumber;
 	
@@ -66,8 +69,8 @@ public class FlightBookingData {
 			String TripCategory,
 			String Employeedetails,
 		
-			String MultiCityTo2,
-			String MultiCityDepartureDate2,
+			String MultiCityTo,
+			String MultiCityDepartureDate,
 			String Adults,
 			String Children,
 			String Infant,
@@ -91,7 +94,10 @@ public class FlightBookingData {
 			String Adult2PassportNumber,
 			String Adult2PassportExpiry,
 			String Adult2Issuingcountry,
+			String dependentName,
+			String Priority,
 			String paymentMethod,
+		
 			String CardNumber,
 			String CardHolderName,
 			String SecurityCode,
@@ -115,8 +121,8 @@ public class FlightBookingData {
 		this.TripCategory=TripCategory;
 		this.Employeedetails=Employeedetails; 
 		
-		this.MultiCityTo2=MultiCityTo2;
-		this.MultiCityDepartureDate2=MultiCityDepartureDate2;
+		this.MultiCityTo=MultiCityTo;
+		this.MultiCityDepartureDate=MultiCityDepartureDate;
 		
 		this.Adults=Adults;
 		this.Children=Children;
@@ -139,6 +145,8 @@ public class FlightBookingData {
 		this.Adult2PassportNumber=Adult2PassportNumber;
 		this.Adult2PassportExpiry=Adult2PassportExpiry;
 		this.Adult2Issuingcountry=Adult2Issuingcountry;
+		this.dependentName=dependentName;
+		this.Priority=Priority;
 		this.paymentMethod=paymentMethod;
 		this.CardNumber=CardNumber;
 		this.CardHolderName=CardHolderName;
@@ -184,12 +192,12 @@ public class FlightBookingData {
 	    public String getEmployeedetails() {
 	        return Employeedetails;
 	    }
-	    public String getMultiCityTo2() {
-	        return MultiCityTo2;
+	    public String getMultiCityTo() {
+	        return MultiCityTo;
 	    }
-		
-	    public String getMultiCityDepartureDate2() {
-	        return MultiCityDepartureDate2;
+
+	    public String getMultiCityDepartureDate() {
+	        return MultiCityDepartureDate;
 	    }
 	    public String getAdults() {
 	        return Adults;
@@ -265,6 +273,15 @@ public class FlightBookingData {
 	    public String getAdult2Issuingcountry() {
 	        return Adult2Issuingcountry;
 	    }
+	    public String getdependentName() {
+	        return dependentName;
+	    }
+
+	    public String getPriority() {
+	        return Priority;
+	    }
+
+			
 			
 	    public String getPaymentMethod() {
 	        return paymentMethod;

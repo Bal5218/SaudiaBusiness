@@ -270,7 +270,9 @@ public final class ExcelUtil {
                  row[33].toString(),
                  row[34].toString(),
                  row[35].toString(),
-                 row[36].toString()
+                 row[36].toString(),
+                 row[37].toString(),
+                 row[38].toString()
                  
                  
               
