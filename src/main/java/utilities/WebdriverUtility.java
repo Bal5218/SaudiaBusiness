@@ -1359,49 +1359,49 @@ public class WebdriverUtility {
 		System.out.println("===== ROUND TRIP DATE SELECTION COMPLETED =====");
 	}
 
-	public void closeRoundTripCalendar() throws Throwable {
-
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-		By calendarPopup = By
-				.xpath("//div[contains(@class,'calendar-popup') " + "and contains(@class,'homepageCalender')]");
-
-		By bookingDetailsField = By.xpath("//mat-form-field[.//*[contains(normalize-space(.),'Booking details')]]");
-
-		// Check whether calendar is actually open
-		List<WebElement> calendars = driver.findElements(calendarPopup);
-
-		if (calendars.isEmpty()) {
-			System.out.println("Round trip calendar is already closed.");
-			return;
-		}
-
-		if (!calendars.get(0).isDisplayed()) {
-			System.out.println("Round trip calendar is already closed.");
-			return;
-		}
-
-		System.out.println("Calendar still open. Clicking outside calendar...");
-
-		WebElement bookingDetails = wait.until(ExpectedConditions.presenceOfElementLocated(bookingDetailsField));
-
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", bookingDetails);
-
-		Thread.sleep(300);
-
-		// Click the actual form-field outside the calendar
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", bookingDetails);
-
-		// Give Angular time to process outside click
-		Thread.sleep(500);
-
-		// Verify calendar closed
-		boolean closed = wait.until(ExpectedConditions.invisibilityOfElementLocated(calendarPopup));
-
-		if (closed) {
-			System.out.println("Round trip calendar CLOSED successfully.");
-		}
-	}
+//	public void closeRoundTripCalendar() throws Throwable {
+//
+//		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//
+//		By calendarPopup = By
+//				.xpath("//div[contains(@class,'calendar-popup') " + "and contains(@class,'homepageCalender')]");
+//
+//		By bookingDetailsField = By.xpath("//mat-form-field[.//*[contains(normalize-space(.),'Booking details')]]");
+//
+//		// Check whether calendar is actually open
+//		List<WebElement> calendars = driver.findElements(calendarPopup);
+//
+//		if (calendars.isEmpty()) {
+//			System.out.println("Round trip calendar is already closed.");
+//			return;
+//		}
+//
+//		if (!calendars.get(0).isDisplayed()) {
+//			System.out.println("Round trip calendar is already closed.");
+//			return;
+//		}
+//
+//		System.out.println("Calendar still open. Clicking outside calendar...");
+//
+//		WebElement bookingDetails = wait.until(ExpectedConditions.presenceOfElementLocated(bookingDetailsField));
+//
+//		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", bookingDetails);
+//
+//		Thread.sleep(300);
+//
+//		// Click the actual form-field outside the calendar
+//		((JavascriptExecutor) driver).executeScript("arguments[0].click();", bookingDetails);
+//
+//		// Give Angular time to process outside click
+//		Thread.sleep(500);
+//
+//		// Verify calendar closed
+//		boolean closed = wait.until(ExpectedConditions.invisibilityOfElementLocated(calendarPopup));
+//
+//		if (closed) {
+//			System.out.println("Round trip calendar CLOSED successfully.");
+//		}
+//	}
 
 	private void selectDateFromOpenCalendar(By calendarPopupLocator, LocalDate targetDate, String dateType)
 			throws Throwable {
@@ -2450,7 +2450,96 @@ public class WebdriverUtility {
 	    );
 	    System.out.println("=================================");
 	}
-	
+	public void closeRoundTripCalendar() throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	    By calendarPopup =
+	            By.xpath(
+	                    "//div[contains(@class,'calendar-popup') " +
+	                    "and contains(@class,'homepageCalender')]"
+	            );
+
+	    // Check whether calendar is open
+	    List<WebElement> calendars =
+	            driver.findElements(calendarPopup);
+
+	    if (calendars.isEmpty()) {
+
+	        System.out.println(
+	                "Round trip calendar is already closed."
+	        );
+
+	        return;
+	    }
+
+	    if (!calendars.get(0).isDisplayed()) {
+
+	        System.out.println(
+	                "Round trip calendar is already closed."
+	        );
+
+	        return;
+	    }
+
+	    System.out.println(
+	            "Calendar still open. Clicking Continue..."
+	    );
+
+	    // Find Continue button inside calendar
+	    By continueButton =
+	            By.xpath(
+	                    "//div[contains(@class,'calendar-popup') " +
+	                    "and contains(@class,'homepageCalender')]" +
+	                    "//button[normalize-space()='Continue']"
+	            );
+
+	    WebElement continueBtn =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            continueButton
+	                    )
+	            );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            continueBtn
+	    );
+
+	    Thread.sleep(500);
+
+	    try {
+
+	        continueBtn.click();
+
+	    } catch (ElementClickInterceptedException e) {
+
+	        System.out.println(
+	                "Normal Continue click intercepted. Using JS click."
+	        );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].click();",
+	                continueBtn
+	        );
+	    }
+
+	    System.out.println(
+	            "Calendar Continue button clicked."
+	    );
+
+	    // Wait until calendar really disappears
+	    wait.until(
+	            ExpectedConditions.invisibilityOfElementLocated(
+	                    calendarPopup
+	            )
+	    );
+
+	    System.out.println(
+	            "Round trip calendar CLOSED successfully."
+	    );
+	}
 
 	public void waitForLoaderToDisappear() throws TimeoutException {
 
