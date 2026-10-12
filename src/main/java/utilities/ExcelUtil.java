@@ -3,6 +3,7 @@ package utilities;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public final class ExcelUtil {
     private ExcelUtil() {
 
     }
-
+   
 
     public static void openExcel(String excelPath, String sheetName) {
 
@@ -64,9 +65,7 @@ public final class ExcelUtil {
                     e);
         }
     }
-    /**
-     * Read Complete Excel Data
-     */
+    
     public static Object[][] getExcelData() {
 
         DataFormatter formatter = new DataFormatter();
@@ -109,7 +108,90 @@ public final class ExcelUtil {
 
 
 
+    public static void updateExcelCell(
+            String filePath,
+            String sheetName,
+            String testCase,
+            String columnName,
+            String value) throws IOException {
+    	
+    	System.out.println("Excel path received = " + filePath);
+    	System.out.println("Absolute path       = "
+    	        + new File(filePath).getAbsolutePath());
+    	System.out.println("File exists         = "
+    	        + new File(filePath).exists());
 
+    	File file = new File(filePath);
+
+
+        try (FileInputStream fis = new FileInputStream(file);
+             Workbook workbook = WorkbookFactory.create(fis)) {
+
+            Sheet sheet = workbook.getSheet(sheetName);
+
+            if (sheet == null) {
+                throw new IllegalArgumentException(
+                        "Sheet not found: " + sheetName);
+            }
+
+            DataFormatter formatter = new DataFormatter();
+            Row header = sheet.getRow(0);
+
+            int testCaseCol = -1;
+            int targetCol = -1;
+
+            for (Cell cell : header) {
+                String name = formatter.formatCellValue(cell).trim();
+
+                if (name.equalsIgnoreCase("TestCaseID")) {
+                    testCaseCol = cell.getColumnIndex();
+                }
+                if (name.equalsIgnoreCase(columnName)) {
+                    targetCol = cell.getColumnIndex();
+                }
+            }
+
+            if (testCaseCol == -1 || targetCol == -1) {
+                throw new IllegalArgumentException(
+                        "TestCase or target column not found");
+            }
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+
+                Row row = sheet.getRow(i);
+
+                if (row == null) {
+                    continue;
+                }
+
+                String rowTestCase = formatter.formatCellValue(
+                        row.getCell(testCaseCol)).trim();
+
+                if (rowTestCase.equalsIgnoreCase(testCase.trim())) {
+
+                    Cell targetCell = row.getCell(targetCol);
+
+                    if (targetCell == null) {
+                        targetCell = row.createCell(targetCol);
+                    }
+
+                    targetCell.setCellValue(value);
+
+                    try (FileOutputStream fos =
+                                 new FileOutputStream(file)) {
+                        workbook.write(fos);
+                    }
+
+                    System.out.println(
+                            columnName + " saved successfully: " + value);
+                    return;
+                }
+            }
+
+            throw new IllegalArgumentException(
+                    "TestCase not found: " + testCase);
+        }
+    }
 
   
     public static CompanyprofileData getCompanyprofileData(

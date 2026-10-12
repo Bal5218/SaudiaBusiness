@@ -1,2 +1,4 @@
-Screenshots
-.settings
+Screenshots/
+.settings/
+target/
+test-output/

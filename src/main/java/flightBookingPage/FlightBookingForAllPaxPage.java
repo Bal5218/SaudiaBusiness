@@ -12,6 +12,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -20,8 +21,11 @@ import org.testng.Assert;
 import com.aventstack.extentreports.ExtentTest;
 
 import base.BasePage;
+import constants.FrameworkConstants;
 import modeles.FlightBookingData;
 import reports.ReportUtil;
+import utilities.ExcelUtil;
+import utilities.Ipathconstant;
 import utilities.WebdriverUtility;
 
 public class FlightBookingForAllPaxPage extends BasePage {
@@ -343,7 +347,18 @@ private By termsCheckbox = By
 	
 	
 	
-	       
+	//paymemnt from sadad
+	    @FindBy(xpath = "//button[normalize-space(.)='Book & Manage']")
+	    private WebElement BookandManagebtn;
+		 
+	    @FindBy(xpath = "(//span[contains(.,'Manage')])[1]")
+		private WebElement Managebtn;
+	    
+	    @FindBy(xpath = "//button[contains(.,' Pay now ')]")
+	  		private WebElement SadadPaynowbtn;
+	  		 
+	    @FindBy(xpath = "//*[contains(text(),'Please wait while your payment is being processed')]")
+	    private WebElement processingPopup;
 	
 	
 	
@@ -354,6 +369,7 @@ private By termsCheckbox = By
 	    
 	    
 	    public void FlightBookingForAllPax(FlightBookingData data) throws Throwable {
+	    	
 
 	        // =====================================================
 	        // 1. GET BASIC DATA
@@ -396,6 +412,7 @@ private By termsCheckbox = By
 	            selectArrivalcity(data);
 
 	            webdriverutility.click(acceptCookieBtn);
+	            
 
 	            webdriverutility.selectPikadayDate(
 	                    DepartureCalendaricon,
@@ -419,6 +436,7 @@ private By termsCheckbox = By
 
 	            webdriverutility.click(acceptCookieBtn);
 
+	            Thread.sleep(8000);
 	            webdriverutility.selectRoundTripDates(
 	                    DepartureCalendaricon,
 	                    data.getDeparturedate(),
@@ -478,6 +496,8 @@ private By termsCheckbox = By
 	                    employeeSuggestion
 	            );
 	        }
+	             	
+	
 
 
 	        // =====================================================
@@ -502,7 +522,13 @@ private By termsCheckbox = By
 
 	        clickSearchButton();
 
-
+//	        Actions actions = new Actions(driver);
+//
+//	        actions
+//	                .moveToElement(SearchFlightbtn)
+//	                .pause(Duration.ofMillis(500))
+//	                .click()
+//	                .perform();
 	        // =====================================================
 	        // 8. RESULT PAGE FLOW
 	        // =====================================================
@@ -657,7 +683,12 @@ Thread.sleep(3000);
 
 	                Adultdetails(data);
 	            }
+	            
+	            else if (Traveller.equalsIgnoreCase(" Multiple travelers ")) {
 
+	                Adultdetails(data);
+	            }
+	            
 
 	            // =================================================
 	            // CONTINUE TO PAYMENT
@@ -877,7 +908,7 @@ Thread.sleep(3000);
 
 	        printAllExpandButtons();
 
-	        clickExpandButton(1);
+	        clickExpandButton(0);
 
 	        Thread.sleep(2000);
 
@@ -923,6 +954,7 @@ Thread.sleep(3000);
 	            "Passenger page opened."
 	    );
 	}	
+	
 	
 private void handleMultiCityResultFlow() throws Throwable {
 
@@ -1310,6 +1342,22 @@ webdriverutility.click(acceptCookieBtn);
 	            webdriverutility.click(EmployeeRadiobtn);
 
 	        }
+	        
+
+	        else if (Traveller.equalsIgnoreCase(" Multiple travelers ")) {
+
+		    
+
+		        webdriverutility.click(TravelCalssDropdown);
+
+		       
+	        }
+		        else  if (!EmployeeRadiobtn.getAttribute("class").contains("checked")) {
+
+		            webdriverutility.click(MultipleTravellerRadioBtn );
+
+		        }
+	        
 
 	      
 	        if (TripCategory.equalsIgnoreCase("Business trip")) {
@@ -1890,50 +1938,172 @@ webdriverutility.click(acceptCookieBtn);
 
 		System.out.println("Expand button [" + index + "] clicked successfully.");
 	}
-	public void clickSearchButton() {
-
-	    By searchFlightBtn = By.xpath(
-	            "//div[contains(@class,'submit-btn') "
-	            + "and not(contains(@class,'submit-btn-mobile'))]"
-	            + "//button[@type='submit' "
-	            + "and .//span[normalize-space()='Search flights']]"
-	    );
+	public void clickSearchButton() throws Throwable {
 
 	    WebDriverWait wait =
 	            new WebDriverWait(driver, Duration.ofSeconds(30));
 
-	    WebElement searchButton = wait.until(
-	            ExpectedConditions.elementToBeClickable(searchFlightBtn)
+	    By searchFlightBtn = By.xpath(
+	            "//div[contains(@class,'submit-btn') "
+	          + "and not(contains(@class,'submit-btn-mobile'))]"
+	          + "//button[@type='submit' "
+	          + "and .//span[normalize-space()='Search flights']]"
 	    );
+
+	    By calendarPopup = By.xpath(
+	            "//div[contains(@class,'calendar-popup') "
+	          + "and contains(@class,'homepageCalender')]"
+	    );
+
+	    By calendarContinueBtn = By.xpath(
+	            "//div[contains(@class,'calendar-popup') "
+	          + "and contains(@class,'homepageCalender')]"
+	          + "//button[normalize-space()='Continue']"
+	    );
+
+	    // =====================================================
+	    // 1. CHECK WHETHER CALENDAR IS STILL OPEN
+	    // =====================================================
+
+	    List<WebElement> calendars =
+	            driver.findElements(calendarPopup);
+
+	    if (!calendars.isEmpty()
+	            && calendars.get(0).isDisplayed()) {
+
+	        System.out.println(
+	                "Calendar is still open. Closing calendar before Search."
+	        );
+
+	        WebElement continueButton =
+	                wait.until(
+	                        ExpectedConditions.elementToBeClickable(
+	                                calendarContinueBtn
+	                        )
+	                );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center'});",
+	                continueButton
+	        );
+
+	        try {
+
+	            continueButton.click();
+
+	        } catch (ElementClickInterceptedException e) {
+
+	            System.out.println(
+	                    "Calendar Continue normal click intercepted. "
+	                  + "Using JS click."
+	            );
+
+	            ((JavascriptExecutor) driver).executeScript(
+	                    "arguments[0].click();",
+	                    continueButton
+	            );
+	        }
+
+	        System.out.println(
+	                "Calendar Continue clicked."
+	        );
+
+	        // VERY IMPORTANT
+	        wait.until(
+	                ExpectedConditions.invisibilityOfElementLocated(
+	                        calendarPopup
+	                )
+	        );
+
+	        System.out.println(
+	                "Calendar closed successfully."
+	        );
+	    }
+
+	    // =====================================================
+	    // 2. WAIT FOR LOADER / OVERLAY IF YOUR APPLICATION HAS ONE
+	    // =====================================================
+
+	    By loaderOverlay =
+	            By.cssSelector("div.loader-overlay");
+
+	    wait.until(
+	            ExpectedConditions.invisibilityOfElementLocated(
+	                    loaderOverlay
+	            )
+	    );
+
+	    // =====================================================
+	    // 3. RELOCATE SEARCH BUTTON
+	    // =====================================================
+
+	    WebElement searchButton =
+	            wait.until(
+	                    ExpectedConditions.refreshed(
+	                            ExpectedConditions.elementToBeClickable(
+	                                    searchFlightBtn
+	                            )
+	                    )
+	            );
 
 	    ((JavascriptExecutor) driver).executeScript(
 	            "arguments[0].scrollIntoView({block:'center', inline:'center'});",
 	            searchButton
 	    );
 
-	    try {
+	    Thread.sleep(500);
 
-	        wait.until(ExpectedConditions.elementToBeClickable(searchButton));
+	    // =====================================================
+	    // 4. CLICK SEARCH
+	    // =====================================================
+
+	    try {
 
 	        searchButton.click();
 
-	        System.out.println("Search button clicked successfully.");
+	        System.out.println(
+	                "Search button clicked successfully."
+	        );
 
 	    } catch (ElementClickInterceptedException e) {
 
-	        System.out.println("Normal click intercepted. Using JS click.");
-
-	        // Re-locate the element because DOM may have changed
-	        WebElement freshSearchButton = wait.until(
-	                ExpectedConditions.elementToBeClickable(searchFlightBtn)
+	        System.out.println(
+	                "Search click intercepted. Re-locating and retrying..."
 	        );
 
+	        wait.until(
+	                ExpectedConditions.invisibilityOfElementLocated(
+	                        calendarPopup
+	                )
+	        );
+
+	        wait.until(
+	                ExpectedConditions.invisibilityOfElementLocated(
+	                        loaderOverlay
+	                )
+	        );
+
+	        WebElement freshSearchButton =
+	                wait.until(
+	                        ExpectedConditions.refreshed(
+	                                ExpectedConditions.elementToBeClickable(
+	                                        searchFlightBtn
+	                                )
+	                        )
+	                );
+
 	        ((JavascriptExecutor) driver).executeScript(
-	                "arguments[0].click();",
+	                "arguments[0].scrollIntoView({block:'center', inline:'center'});",
 	                freshSearchButton
 	        );
 
-	        System.out.println("Search button clicked using JS.");
+	        Thread.sleep(300);
+
+	        freshSearchButton.click();
+
+	        System.out.println(
+	                "Search button clicked successfully after retry."
+	        );
 	    }
 	}
 	private void clickReview() throws Throwable {
@@ -2357,20 +2527,28 @@ ReportUtil.logPass("These Dependents are going to Add");
 	
 	public void selectPaymentMethod(FlightBookingData data) throws Throwable {
 
-	    String paymentMethod = data.getPaymentMethod().trim();
+		String paymentMethod = data.getPaymentMethod().trim();
 
-	    System.out.println("Payment Method from Excel = [" + paymentMethod + "]");
+		String[] methods = paymentMethod.split("\\|");
+
+		String initialMethod = methods[0].trim();
+
+	    System.out.println("Payment Method from Excel = [" + initialMethod + "]");
 	    
-	    Thread.sleep(3000);
-	    if (paymentMethod.equalsIgnoreCase("SADAD")) {
+	    WebDriverWait wait=new WebDriverWait(driver, Duration.ofSeconds(80));
+	    if (initialMethod.equalsIgnoreCase("SADAD")) {
 
-	        selectSadad();
+	        selectSadad(data);
 
-	    } else if (paymentMethod.equalsIgnoreCase("Saved cards")) {
+	    } 
+	   
+	
+	    
+	    else if (initialMethod.equalsIgnoreCase("Saved cards")) {
 
 	    	selectSavedCard(data);
 
-	    } else if (paymentMethod.equalsIgnoreCase("Use a different card")) {
+	    } else if (initialMethod.equalsIgnoreCase("Use a different card")) {
 
 	        selectOthersCard(data);
 
@@ -2450,7 +2628,29 @@ ReportUtil.logPass("These Dependents are going to Add");
 	            payNow
 	    );
 
+	   // payNow.click();
+	    
+	    WebElement payNow1= wait.until(
+	            ExpectedConditions.elementToBeClickable(Paynowbtn)
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            payNow1
+	    );
+Thread.sleep(5000);
 	    payNow.click();
+
+	    System.out.println("Pay Now clicked.");
+
+	    // Cardinal 3DS OTP
+	  //  handleCardinalFrame(data);
+	    
+	    
+	    
+	    
+	    
+	    
 
 //	    System.out.println("Pay Now clicked.");
 //
@@ -2514,14 +2714,26 @@ ReportUtil.logPass("These Dependents are going to Add");
 	}
 	
 	
-	private void selectSadad() throws Throwable {
+	private void selectSadad(FlightBookingData data) throws Throwable {
+		
+		String paymentMethod = data.getPaymentMethod().trim();
+
+		String[] methods = paymentMethod.split("\\|");
+
+		String initialMethod = methods[0].trim();
+		String secondMethod = methods[1].trim();
+	 
 
 	    WebDriverWait wait =
 	            new WebDriverWait(driver, Duration.ofSeconds(30));
 
-	    WebElement sadadPanel = wait.until(
-	            ExpectedConditions.elementToBeClickable(SdadRadiobtn)
-	    );
+	    // 1. Select SADAD
+	    WebElement sadadPanel =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            SdadRadiobtn
+	                    )
+	            );
 
 	    ((JavascriptExecutor) driver).executeScript(
 	            "arguments[0].scrollIntoView({block:'center'});",
@@ -2532,63 +2744,115 @@ ReportUtil.logPass("These Dependents are going to Add");
 
 	    System.out.println("SADAD payment method selected.");
 
-	    WebElement terms = wait.until(
-	            ExpectedConditions.visibilityOfElementLocated(termsCheckbox)
-	    );
+	    // 2. Select Terms
+	    WebElement terms =
+	            wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            termsCheckbox
+	                    )
+	            );
 
 	    ((JavascriptExecutor) driver).executeScript(
 	            "arguments[0].scrollIntoView({block:'center'});",
 	            terms
 	    );
 
-	    // IMPORTANT: click only when not selected
-	    if (!terms.isSelected()) {
+	    terms.click();
 
-	        wait.until(
-	                ExpectedConditions.elementToBeClickable(termsCheckbox)
-	        );
+	    System.out.println(
+	            "Terms and Conditions clicked."
+	    );
 
-	        terms.click();
+	    // 3. Pay Now
+	    
+	    webdriverutility.click(Paynowbtn);
+	    WebDriverWait wait2 =
+	            new WebDriverWait(driver, Duration.ofSeconds(90));
 
-	        System.out.println("Terms checkbox selected.");
+	    wait2.until(ExpectedConditions.invisibilityOf(processingPopup));
+
+	    System.out.println(
+	            "Pay Now clicked."
+	    );
+	    WebDriverWait wait1 =
+	            new WebDriverWait(driver, Duration.ofSeconds(60));
+
+	    WebElement bookManage = wait1.until(
+	            ExpectedConditions.visibilityOfElementLocated(
+	                    By.xpath("//button[normalize-space(.)='Book & Manage']")
+	            )
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            bookManage
+	    );
+
+	    wait.until(
+	            ExpectedConditions.elementToBeClickable(bookManage)
+	    );
+
+	    bookManage.click();
+	    
+	    webdriverutility.click(Managebtn);
+	    
+	    webdriverutility.click(SadadPaynowbtn);
+	    
+	    if (secondMethod.equalsIgnoreCase("Saved cards")) {
+
+	    	selectSavedCard(data);
+
+	    } else if (secondMethod.equalsIgnoreCase("Use a different card")) {
+
+	        selectOthersCard(data);
 
 	    } else {
 
-	        System.out.println("Terms checkbox already selected.");
-
+	        throw new IllegalArgumentException(
+	                "Unsupported payment method: " + paymentMethod
+	        );
 	    }
+	    WebElement pnrElement = wait1.until(
+	    		ExpectedConditions.visibilityOfElementLocated(
+	    		bookingReference));
 
-	    // Verify
-	    System.out.println(
-	            "Terms checkbox final state = " + terms.isSelected()
-	    );
+	    		String pnr = pnrElement.getText().trim();
+
+	    		System.out.println("PNR = " + pnr);
+
+	    		Assert.assertFalse(
+	    		pnr.isEmpty(),
+	    		"PNR was not generated.");
+	    		System.out.println("STEP 1: Booking confirmed");
+	    		System.out.println("STEP 2: PNR extracted = " + pnr);
+
+	    		ExcelUtil.updateExcelCell(
+	    			    Ipathconstant.excelfile_path,
+	    			    "FlightBookingData",
+	    			    data.getTestCaseId(),
+	    			    "PNR",
+	    			    pnr
+	    			);
+	    		System.out.println(Ipathconstant.excelfile_path);
+
+	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
 	    
-	    webdriverutility.click(Paynowbtn);
 	    
-Thread.sleep(5000);   wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-				"//div[contains(@class,'toast-msg__hold')]//span[normalize-space()='This booking is on hold.']")));
-	Assert.assertTrue(driver.findElement(By
-				.xpath("//div[contains(@class,'toast-msg__hold')]//span[normalize-space()='This booking is on hold.']"))
-				.isDisplayed(), "Booking hold message is not displayed.");
-		WebElement pnrElement = wait.until(
-			    ExpectedConditions.visibilityOfElementLocated(bookingReference)
-			);
-
-			String pnr = pnrElement.getText().trim();
-
-			System.out.println("PNR = " + pnr);
-
-			Assert.assertFalse(
-			    pnr.isEmpty(),
-			    "PNR was not generated."
-			);
-
-			ReportUtil.logPass(
-			    "PNR generated successfully: " + pnr
-			);
-	
 	}
-	
+//	public String getBookingReference() {
+//
+//	    WebDriverWait wait =
+//	            new WebDriverWait(driver, Duration.ofSeconds(30));
+//
+//	    wait.until(
+//	            ExpectedConditions.visibilityOf(bookingReference));
+//
+//	    String pnr = bookingReference.getText().trim();
+//
+//	    System.out.println("Booking PNR = " + pnr);
+//
+//	    return pnr;
+//	}
 	private void selectOthersCard(FlightBookingData data) throws Throwable {
 
 	    WebDriverWait wait =
@@ -2698,5 +2962,67 @@ Thread.sleep(5000);   wait.until(ExpectedConditions.visibilityOfElementLocated(B
 
 	    // DO NOT CLICK PAY NOW HERE
 	}
-	
+	private void handleCardinalFrame(FlightBookingData data) throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(60));
+
+	    try {
+
+	        System.out.println("Waiting for Cardinal OTP iframe...");
+
+	        // Switch to Cardinal iframe
+	        wait.until(
+	                ExpectedConditions.frameToBeAvailableAndSwitchToIt(
+	                        cardinalIframe
+	                )
+	        );
+
+	        System.out.println(
+	                "Switched to Cardinal OTP iframe successfully."
+	        );
+
+	        // Wait for OTP textbox
+	        WebElement otpBox =
+	                wait.until(
+	                        ExpectedConditions.visibilityOfElementLocated(
+	                                OtpTextbox
+	                        )
+	                );
+
+	        String otp = data.getOTP().trim();
+
+	        System.out.println("OTP = " + otp);
+
+	        otpBox.clear();
+	        otpBox.sendKeys(otp);
+
+	        System.out.println(
+	                "OTP entered successfully."
+	        );
+
+	        // Submit OTP
+	        WebElement submit =
+	                wait.until(
+	                        ExpectedConditions.elementToBeClickable(
+	                                Submitbtn
+	                        )
+	                );
+
+	        submit.click();
+
+	        System.out.println(
+	                "OTP Submit clicked successfully."
+	        );
+
+	    } finally {
+
+	        // VERY IMPORTANT
+	        driver.switchTo().defaultContent();
+
+	        System.out.println(
+	                "Switched back to main page."
+	        );
+	    }
+	}
 	}
