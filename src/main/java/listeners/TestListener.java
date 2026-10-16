@@ -1,5 +1,6 @@
 package listeners;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -17,6 +18,7 @@ import driver.Driverfactory;
 import modeles.CompanyprofileData;
 import modeles.FlightBookingData;
 import reports.ExtentTestManager;
+import utilities.ExcelUtil;
 import utilities.ScreenshotUtils;
 
 
@@ -393,15 +395,19 @@ public class TestListener implements ITestListener {
    
     // SUITE FINISH
     
-    @Override
-    public void onFinish(
-            ITestContext context) {
+@Override
+public void onFinish(ITestContext context) {
 
-        System.out.println(
-                "===== TEST SUITE FINISHED =====");
+    System.out.println("===== TEST SUITE FINISHED =====");
 
-        ExtentTestManager.unload();
+    try {
+        ExcelUtil.copyExcelToReportFolder();
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+
+    ExtentTestManager.unload();
+}
 
 
   

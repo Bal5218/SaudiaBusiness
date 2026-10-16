@@ -10,7 +10,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.NoSuchElementException;
+
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -30,7 +30,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import base.BasePage;
+
+
 
 public class WebdriverUtility {
 
@@ -2558,8 +2559,36 @@ public class WebdriverUtility {
 		System.out.println("Loader disappeared successfully.");
 	}
 
+public static void refreshIf400(WebDriver driver) {
 
+    try {
+        String pageText = driver.findElement(By.tagName("body")).getText();
 
+        if (pageText.contains("400 Bad Request")
+                || pageText.contains("HTTP ERROR 400")) {
 
+            System.out.println("400 error detected. Refreshing page...");
+
+            driver.navigate().refresh();
+
+            WebDriverWait wait =
+                    new WebDriverWait(driver, Duration.ofSeconds(30));
+
+            wait.until(
+                    ExpectedConditions.jsReturnsValue(
+                            "return document.readyState === 'complete' ? 'complete' : null;"
+                    )
+            );
+
+            System.out.println("Page refreshed successfully.");
+        }
+
+    } catch (Exception e) {
+        System.out.println("400 error check failed: " + e.getMessage());
+    }
+}
 
 }
+
+
+

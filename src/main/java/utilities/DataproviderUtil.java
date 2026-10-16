@@ -54,4 +54,24 @@ public class DataproviderUtil {
 
         return testData;
     }
+    @DataProvider(name = "FlightSearchSmokeData")
+public static Object[][] flightSearchSmokeData() {
+
+    ExcelUtil.openExcel(
+            Ipathconstant.excelfile_path,
+            "FlightBookingData"
+    );
+
+    Object[][] excelData = ExcelUtil.getExcelData();
+    Object[][] testData = new Object[excelData.length][1];
+
+    for (int i = 0; i < excelData.length; i++) {
+        testData[i][0] =
+                ExcelUtil.getFlightBookingData(excelData[i]);
+    }
+
+    ExcelUtil.closeExcel();
+    return testData;
+}
+
 }

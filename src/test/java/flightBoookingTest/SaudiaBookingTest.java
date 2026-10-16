@@ -1,34 +1,35 @@
-package flightBoookingTest;
+package flightBookingTest;
 
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import com.aventstack.extentreports.ExtentTest;
 
-import RegistrationPage.CompnayProfilepage;
-import RegistrationPage.NewTravllerPage;
-import RegistrationPage.TravelProfilingPage;
+import RegistrationPage.TripsApprovalFlowPage;
 import base.BaseClass;
 import flightBookingPage.FlightBookingForAllPaxPage;
+import flightBookingPage.FlightBookingForAllsuitpage;
 import listeners.TestListener;
 import modeles.CompanyprofileData;
 import modeles.FlightBookingData;
 import utilities.DataproviderUtil;
 
+
+
+
+
 @Listeners(TestListener.class)
 public class SaudiaBookingTest extends BaseClass {
 
-    @Test(enabled=false,
+    @Test(
         dataProvider = "CompanyProfileData",
         dataProviderClass = DataproviderUtil.class
 //        retryAnalyzer = listeners.RetryAnalyser.class
     )
-    public void CompnayProfile(CompanyprofileData data) throws Throwable {
+    public void CompanyProfile(CompanyprofileData data) throws Throwable {
+TripsApprovalFlowPage TripsApprovalFlowPage =
+                new TripsApprovalFlowPage(driver);
 
-    	RegistrationPage.NewTravllerPage NewTravllerPage =
-                new NewTravllerPage(driver);
-
-    	NewTravllerPage.AddTraveller(data);
+    	TripsApprovalFlowPage.TripsApproval(data);
     }
     
     
@@ -60,17 +61,41 @@ public class SaudiaBookingTest extends BaseClass {
 //    	FlightBookingForAllPaxPage.FlightBookingForAllPax(data);
 //    }
 
-    @Test(
-    	    dataProvider = "FlightBookingData",
-    	    dataProviderClass = DataproviderUtil.class
-//retryAnalyzer = listeners.RetryAnalyser.class
-    	)
-    	public void flightBookingTest(
-    	      FlightBookingData data) throws Throwable {
+   
+@Test(
+    dataProvider = "FlightBookingData",
+    dataProviderClass = DataproviderUtil.class
+   // retryAnalyzer = listeners.RetryAnalyser.class
+)
+public void flightBookingTest(FlightBookingData data)
+        throws Throwable {
 
-    	    FlightBookingForAllPaxPage flightBookingPage =
-    	            new FlightBookingForAllPaxPage(driver);
+    System.out.println("========== FLIGHT BOOKING TEST STARTED ==========");
+    System.out.println("FlightBookingData received: " + data);
 
-    	    flightBookingPage.FlightBookingForAllPax(data);
-    	}
+    FlightBookingForAllPaxPage flightBookingPage =
+            new FlightBookingForAllPaxPage(driver);
+
+    flightBookingPage.FlightBookingForAllPax(data);
+
+    System.out.println("========== FLIGHT BOOKING TEST FINISHED ==========");
+}
+
+		
+
+
+// @Test(
+//     dataProvider = "FlightSearchSmokeData",
+//     dataProviderClass = DataproviderUtil.class,
+//     groups = {"Smoke"}
+// )
+// public void flightSearchSmokeTest(FlightBookingData data)
+//         throws Throwable {
+
+//     FlightBookingForAllsuitpage page =
+//             new FlightBookingForAllsuitpage(driver);
+
+//     page.searFlightForAll(data);
+// }
+
 }

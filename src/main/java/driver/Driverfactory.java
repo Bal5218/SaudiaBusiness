@@ -59,10 +59,16 @@ public final class Driverfactory {
     }
 
     public static WebDriver getDriver() {
+    WebDriver webDriver = driver.get();
 
-        return driver.get();
+    if (webDriver == null) {
+        throw new IllegalStateException(
+            "WebDriver is not initialized for this thread."
+        );
     }
 
+    return webDriver;
+}
     public static void quitDriver() {
 
         WebDriver webDriver = driver.get();

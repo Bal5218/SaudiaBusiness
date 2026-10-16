@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ import modeles.CompanyprofileData;
 import modeles.FlightBookingData;
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import java.nio.file.StandardCopyOption;
 
 public final class ExcelUtil {
 
@@ -193,6 +198,35 @@ public final class ExcelUtil {
         }
     }
 
+public static void copyExcelToReportFolder() throws IOException {
+
+    Path source = Paths.get(Ipathconstant.excelfile_path);
+
+    Path destination = Paths.get(
+            Ipathconstant.projectpath,
+            "test-output",
+            "FlightSaudiadata.xlsx"
+    );
+
+    if (!Files.exists(source)) {
+        throw new IOException(
+                "Source Excel file not found: " + source
+        );
+    }
+
+    Files.createDirectories(destination.getParent());
+
+    Files.copy(
+            source,
+            destination,
+            StandardCopyOption.REPLACE_EXISTING
+    );
+
+    System.out.println(
+            "Excel attached with report folder: " + destination
+    );
+}
+
   
     public static CompanyprofileData getCompanyprofileData(
             Object[] row) {
@@ -284,7 +318,10 @@ public final class ExcelUtil {
 
                 row[59].toString(),
                 row[60].toString(),
-                row[61].toString()
+                row[61].toString(),
+                row[62].toString(),
+                row[63].toString()
+
                 
                 
                 

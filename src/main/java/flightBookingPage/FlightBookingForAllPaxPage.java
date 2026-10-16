@@ -21,7 +21,7 @@ import org.testng.Assert;
 import com.aventstack.extentreports.ExtentTest;
 
 import base.BasePage;
-import constants.FrameworkConstants;
+
 import modeles.FlightBookingData;
 import reports.ReportUtil;
 import utilities.ExcelUtil;
@@ -507,11 +507,9 @@ private By termsCheckbox = By
 	        webdriverutility.waitForVisibility(
 	                SearchFlightbtn
 	        );
-
-	        ReportUtil.attachFullPageScreenshot(
-	                driver,
-	                "Search data is entered"
-	        );
+ReportUtil.attachFullScreenScreenshotwithurl(
+        "Search data is entered"
+);
 
 	        Thread.sleep(7000);
 
@@ -707,6 +705,13 @@ Thread.sleep(3000);
 	            webdriverutility.click(
 	                    ContinueToPaymentBtn
 	            );
+				String pageText = driver.findElement(By.tagName("body")).getText();
+				if (pageText.contains("400 Bad Request")
+        || pageText.contains("404 Not Found")
+        || pageText.contains("500 Internal Server Error")) {
+
+    WebdriverUtility.refreshIf400(driver);
+}
 	        }
 
 
@@ -961,7 +966,7 @@ private void handleMultiCityResultFlow() throws Throwable {
 	    WebDriverWait wait =
 	            new WebDriverWait(
 	                    driver,
-	                    Duration.ofSeconds(60)
+	                    Duration.ofSeconds(90)
 	            );
 
 
@@ -1004,7 +1009,7 @@ private void handleMultiCityResultFlow() throws Throwable {
 	            selectTrip
 	    );
 
-	    Thread.sleep(1000);
+	  
 
 
 	    // =====================================================
@@ -1012,7 +1017,6 @@ private void handleMultiCityResultFlow() throws Throwable {
 	    // =====================================================
 
 	    try {
-
 	        selectTrip.click();
 
 	    } catch (ElementClickInterceptedException e) {
@@ -1064,7 +1068,7 @@ private void handleMultiCityResultFlow() throws Throwable {
 	            selectContinue
 	    );
 
-	    Thread.sleep(1000);
+	  
 
 
 	    // =====================================================
@@ -2547,10 +2551,60 @@ ReportUtil.logPass("These Dependents are going to Add");
 	    else if (initialMethod.equalsIgnoreCase("Saved cards")) {
 
 	    	selectSavedCard(data);
+			WebElement pnrElement = wait.until(
+	    		ExpectedConditions.visibilityOfElementLocated(
+	    		bookingReference));
+
+	    		String pnr = pnrElement.getText().trim();
+
+	    		System.out.println("PNR = " + pnr);
+
+	    		Assert.assertFalse(
+	    		pnr.isEmpty(),
+	    		"PNR was not generated.");
+	    		System.out.println("STEP 1: Booking confirmed");
+	    		System.out.println("STEP 2: PNR extracted = " + pnr);
+
+	    		ExcelUtil.updateExcelCell(
+	    			    Ipathconstant.excelfile_path,
+	    			    "FlightBookingData",
+	    			    data.getTestCaseId(),
+	    			    "PNR",
+	    			    pnr
+	    			);
+	    		System.out.println(Ipathconstant.excelfile_path);
+
+	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
+	    
 
 	    } else if (initialMethod.equalsIgnoreCase("Use a different card")) {
 
 	        selectOthersCard(data);
+			WebElement pnrElement = wait.until(
+	    		ExpectedConditions.visibilityOfElementLocated(
+	    		bookingReference));
+
+	    		String pnr = pnrElement.getText().trim();
+
+	    		System.out.println("PNR = " + pnr);
+
+	    		Assert.assertFalse(
+	    		pnr.isEmpty(),
+	    		"PNR was not generated.");
+	    		System.out.println("STEP 1: Booking confirmed");
+	    		System.out.println("STEP 2: PNR extracted = " + pnr);
+
+	    		ExcelUtil.updateExcelCell(
+	    			    Ipathconstant.excelfile_path,
+	    			    "FlightBookingData",
+	    			    data.getTestCaseId(),
+	    			    "PNR",
+	    			    pnr
+	    			);
+	    		System.out.println(Ipathconstant.excelfile_path);
+
+	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
+	    
 
 	    } else {
 
@@ -2592,7 +2646,7 @@ ReportUtil.logPass("These Dependents are going to Add");
 	    );
 
 	    card.click();
-
+ReportUtil.logPass("select method to pay:");
 	    System.out.println("Saved card selected.");
 
 
@@ -2762,22 +2816,24 @@ Thread.sleep(5000);
 	    System.out.println(
 	            "Terms and Conditions clicked."
 	    );
-
+ReportUtil.logPass("select particular paymentmethod."+initialMethod );
 	    // 3. Pay Now
-	    
-	    webdriverutility.click(Paynowbtn);
-	    WebDriverWait wait2 =
+		 WebDriverWait wait2 =
 	            new WebDriverWait(driver, Duration.ofSeconds(90));
 
+	     wait2.until(
+	                    ExpectedConditions.elementToBeClickable(Paynowbtn));
+
+	    webdriverutility.click(Paynowbtn);
+	   
 	    wait2.until(ExpectedConditions.invisibilityOf(processingPopup));
 
 	    System.out.println(
 	            "Pay Now clicked."
 	    );
-	    WebDriverWait wait1 =
-	            new WebDriverWait(driver, Duration.ofSeconds(60));
+	    
 
-	    WebElement bookManage = wait1.until(
+	    WebElement bookManage = wait2.until(
 	            ExpectedConditions.visibilityOfElementLocated(
 	                    By.xpath("//button[normalize-space(.)='Book & Manage']")
 	            )
@@ -2812,30 +2868,6 @@ Thread.sleep(5000);
 	                "Unsupported payment method: " + paymentMethod
 	        );
 	    }
-	    WebElement pnrElement = wait1.until(
-	    		ExpectedConditions.visibilityOfElementLocated(
-	    		bookingReference));
-
-	    		String pnr = pnrElement.getText().trim();
-
-	    		System.out.println("PNR = " + pnr);
-
-	    		Assert.assertFalse(
-	    		pnr.isEmpty(),
-	    		"PNR was not generated.");
-	    		System.out.println("STEP 1: Booking confirmed");
-	    		System.out.println("STEP 2: PNR extracted = " + pnr);
-
-	    		ExcelUtil.updateExcelCell(
-	    			    Ipathconstant.excelfile_path,
-	    			    "FlightBookingData",
-	    			    data.getTestCaseId(),
-	    			    "PNR",
-	    			    pnr
-	    			);
-	    		System.out.println(Ipathconstant.excelfile_path);
-
-	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
 	    
 	    
 	}
@@ -2882,7 +2914,7 @@ Thread.sleep(5000);
 	        );
 
 	        cardOption.click();
-
+ReportUtil.logPass("select method to pay:" + cardOption);
 	        System.out.println(
 	                "Use a different card was closed, so it was opened."
 	        );
@@ -2957,11 +2989,44 @@ Thread.sleep(5000);
 	    ReportUtil.logPass("Other card details entered");
 	    
 	    webdriverutility.click(termsCheckbox);
-	    
-	    webdriverutility.click(Paynowbtn);
+		 WebDriverWait wait3 =
+	            new WebDriverWait(driver, Duration.ofSeconds(120));
+
+//  wait3.until(
+// 	            ExpectedConditions.elementToBeClickable(Paynowbtn));
+	  
+
+WebElement payNow=wait3.until( ExpectedConditions.elementToBeClickable(Paynowbtn));
+	           
+	  payNow.click();
+
+
+ 
 
 	    // DO NOT CLICK PAY NOW HERE
 	}
+	private void waitForBookingConfirmation() {
+
+    WebDriverWait wait =
+            new WebDriverWait(driver, Duration.ofMinutes(3));
+
+    System.out.println(
+            "Waiting for Booking Confirmed status..."
+    );
+By bookingConfirmed = By.xpath(
+	                "//*[normalize-space()='Booking confirmed']"
+	        );
+
+    wait.until(
+        ExpectedConditions.visibilityOfElementLocated(
+            bookingConfirmed
+        )
+    );
+
+    System.out.println(
+            "Booking Confirmed status displayed. Proceeding..."
+    );
+}
 	private void handleCardinalFrame(FlightBookingData data) throws Throwable {
 
 	    WebDriverWait wait =

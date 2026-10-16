@@ -1,7 +1,7 @@
 package reports;
 
-import java.util.HashMap;
-import java.util.Map;
+
+
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -12,8 +12,14 @@ import org.openqa.selenium.WebElement;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 
-import reports.ExtentTestManager;
+import driver.Driverfactory;
 import utilities.ScreenshotUtils;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import javax.imageio.ImageIO;
 
 public class ReportUtil {
 
@@ -304,6 +310,27 @@ public class ReportUtil {
     }
 
 
+
+public static void attachFullScreenScreenshotwithurl(String message)
+        throws Exception {
+
+    // Capture current browser UI only
+    WebDriver driver = Driverfactory.getDriver();
+
+    byte[] screenshot = ((TakesScreenshot) driver)
+            .getScreenshotAs(OutputType.BYTES);
+
+    // Attach screenshot to Extent Report
+    ExtentTestManager.getTest().info(
+            message,
+            com.aventstack.extentreports.MediaEntityBuilder
+                    .createScreenCaptureFromBase64String(
+                            java.util.Base64.getEncoder()
+                                    .encodeToString(screenshot)
+                    )
+                    .build()
+    );
+}
     public static void logFail(String message) {
 
         try {
