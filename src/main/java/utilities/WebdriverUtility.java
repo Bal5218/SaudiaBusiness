@@ -121,26 +121,44 @@ public class WebdriverUtility {
 		}
 	}
 
+//	public void sendKeys(WebElement element, String value) {
+//
+//		int attempts = 0;
+//
+//		while (attempts < 3) {
+//
+//			try {
+//
+//				waitForVisibility(element);
+//				element.clear();
+//				element.sendKeys(value);
+//				return;
+//
+//			} catch (StaleElementReferenceException e) {
+//
+//				attempts++;
+//			}
+//		}
+//
+//		throw new RuntimeException("Unable to send keys due to StaleElementReferenceException.");
+//	}
+//	
+	
 	public void sendKeys(WebElement element, String value) {
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-		int attempts = 0;
+	    WebElement input = wait.until(
+	        ExpectedConditions.visibilityOf(element)
+	    );
 
-		while (attempts < 3) {
+	    if (value == null) {
+	        throw new IllegalArgumentException(
+	            "Value passed to sendKeys is null"
+	        );
+	    }
 
-			try {
-
-				waitForVisibility(element);
-				element.clear();
-				element.sendKeys(value);
-				return;
-
-			} catch (StaleElementReferenceException e) {
-
-				attempts++;
-			}
-		}
-
-		throw new RuntimeException("Unable to send keys due to StaleElementReferenceException.");
+	    input.clear();
+	    input.sendKeys(value);
 	}
 	public WebElement waitForClickable(By locator, int seconds) {
 
@@ -284,25 +302,81 @@ public class WebdriverUtility {
 		element.click();
 	}
 
-	public void selectMatOptionByVisibleText(WebElement matSelect, String optionText) {
+	public void selectMatOptionByVisibleText(
+	        WebElement matSelect, String optionText) {
 
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(20));
 
-		// Click mat-select
-		WebElement select = wait.until(ExpectedConditions.elementToBeClickable(matSelect));
+	    // Wait until the previous menu overlay closes
+	    int count = 0;
 
-		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", select);
+	    while (!driver.findElements(
+	            By.cssSelector("body.body-menu-open")).isEmpty()
+	            && count < 20) {
 
-		select.click();
+	        try {
+	            Thread.sleep(500);
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	            throw new RuntimeException(e);
+	        }
 
-		By optionLocator = By.xpath("//mat-option[normalize-space(.)='" + optionText.trim() + "']");
+	        count++;
+	    }
 
-		WebElement option = wait.until(ExpectedConditions.elementToBeClickable(optionLocator));
+	    // Click dropdown
+	    WebElement select =
+	            wait.until(ExpectedConditions.elementToBeClickable(matSelect));
 
-		option.click();
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});", select);
 
-		System.out.println("Selected Mat Option : " + optionText);
+	    select.click();
+
+	    // Select option
+	    By optionLocator = By.xpath(
+	            "//mat-option[normalize-space(.)='"
+	                    + optionText.trim() + "']");
+
+	    WebElement option =
+	            wait.until(ExpectedConditions.elementToBeClickable(optionLocator));
+
+	    option.click();
+
+	    System.out.println("Selected Mat Option: " + optionText);
 	}
+
+
+	public void selectMatCheckbox(WebElement dropdown, By checkboxLocator) {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	    // Step 1: Open dropdown
+	    WebElement select = wait.until(
+	            ExpectedConditions.elementToBeClickable(dropdown));
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});", select);
+
+	    select.click();
+
+	    // Step 2: Wait for checkbox to appear
+	    WebElement checkbox = wait.until(
+	            ExpectedConditions.visibilityOfElementLocated(checkboxLocator));
+
+	    // Step 3: Click visible checkbox touch target
+	    WebElement touchTarget = checkbox.findElement(
+	            By.xpath(".//span[contains(@class,'mat-mdc-checkbox-touch-target')]"));
+
+	    wait.until(ExpectedConditions.elementToBeClickable(touchTarget));
+
+	    touchTarget.click();
+
+	    System.out.println("Corporate checkbox clicked");
+	}
+
 
 	public void acceptCookieIfPresent() throws TimeoutException {
 
@@ -316,6 +390,14 @@ public class WebdriverUtility {
 		acceptBtn.click();
 
 		System.out.println("Cookie banner accepted.");
+	}
+	public boolean isElementDisplayed(WebElement element) {
+	    try {
+	        return element.isDisplayed();
+	    } catch (NoSuchElementException |
+	             StaleElementReferenceException e) {
+	        return false;
+	    }
 	}
 
 	public void clickWithRetry(WebElement element) {
@@ -659,12 +741,7 @@ public class WebdriverUtility {
 
 	    // ============================================================
 	    // REFERENCE DATE
-	    //
-	    // Normal departure:
-	    // referenceDateString = null
-	    //
-	    // Multi-city Segment 2:
-	    // referenceDateString = Segment 1 departure date
+	  
 	    // ============================================================
 
 	    YearMonth referenceMonth = null;
@@ -765,23 +842,28 @@ public class WebdriverUtility {
 	            "Calendar opened.");
 
 
-	    // ============================================================
-	    // STEP 1
-	    //
-	    // IF REFERENCE MONTH IS PROVIDED,
-	    // FIRST MOVE CALENDAR TO REFERENCE MONTH.
-	    //
-	    // Example:
-	    //
-	    // Segment 1 = 14-Oct-2026
-	    // Calendar opens = Sep-2026
-	    //
-	    // Sep -> NEXT -> Oct
-	    //
-	    // Once Oct is reached, this loop STOPS.
-	    // ============================================================
 
-	    if (referenceMonth != null) {
+wait.until(
+        ExpectedConditions.visibilityOfElementLocated(
+                calendarPopup));
+
+System.out.println("Calendar popup opened.");
+
+// Hover over the opened calendar popup
+WebElement calendarForHover =
+        driver.findElement(calendarPopup);
+
+new Actions(driver)
+        .moveToElement(calendarForHover)
+        .perform();
+
+System.out.println("Hovered over calendar popup.");
+
+// Wait 3 seconds after hover
+Thread.sleep(3000);
+
+if (referenceMonth != null) {
+
 
 	        boolean referenceMonthReached = false;
 
@@ -907,7 +989,7 @@ public class WebdriverUtility {
 	                        ExpectedConditions
 	                                .visibilityOfElementLocated(
 	                                        calendarPopup));
-
+	        Thread.sleep(5000);
 
 	        List<YearMonth> displayedMonths =
 	                getDisplayedMonths(
@@ -1304,60 +1386,69 @@ public class WebdriverUtility {
 		throw new IllegalArgumentException("Unsupported date format: [" + date + "]");
 	}
 
-	public void selectRoundTripDates(WebElement departureCalendarIcon, String departureDate, String returnDate)
-			throws Throwable {
+	
+public void selectRoundTripDates(
+        WebElement departureCalendarIcon,
+        String departureDate,
+        String returnDate) throws Throwable {
 
-		System.out.println("===== ROUND TRIP DATE SELECTION STARTED =====");
+    System.out.println("===== ROUND TRIP DATE SELECTION STARTED =====");
 
-		LocalDate departure = parseInputDate(departureDate);
-		LocalDate returnDt = parseInputDate(returnDate);
+    LocalDate departure = parseInputDate(departureDate);
+    LocalDate returnDt = parseInputDate(returnDate);
 
-		if (returnDt.isBefore(departure)) {
-			throw new IllegalArgumentException("Return date cannot be before departure date");
-		}
+    if (returnDt.isBefore(departure)) {
+        throw new IllegalArgumentException(
+            "Return date cannot be before departure date");
+    }
 
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    WebDriverWait wait =
+        new WebDriverWait(driver, Duration.ofSeconds(20));
 
-		By calendarPopup = By
-				.xpath("//div[contains(@class,'calendar-popup') " + "and contains(@class,'homepageCalender')]");
+    By calendarPopup = By.xpath(
+        "//div[contains(@class,'calendar-popup') " +
+        "and contains(@class,'homepageCalender')]"
+    );
 
-		
-		// 1. OPEN DEPARTURE CALENDAR ONLY ONCE
-		
+    // 1. Open Departure calendar only once
+    System.out.println("Opening DEPARTURE calendar...");
 
-		System.out.println("Opening DEPARTURE calendar...");
+    WebElement departureIcon =
+        wait.until(ExpectedConditions.elementToBeClickable(
+            departureCalendarIcon));
 
-		WebElement departureIcon = wait.until(ExpectedConditions.elementToBeClickable(departureCalendarIcon));
+    ((JavascriptExecutor) driver).executeScript(
+        "arguments[0].click();", departureIcon);
 
-		((JavascriptExecutor) driver).executeScript("arguments[0].click();", departureIcon);
+    WebDriverWait calendarWait =
+            new WebDriverWait(driver, Duration.ofSeconds(150));
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(calendarPopup));
+    calendarWait.until(
+            ExpectedConditions.visibilityOfElementLocated(
+                    calendarPopup));
 
-		System.out.println("Departure calendar OPENED.");
+    System.out.println("Calendar opened successfully.");
+    // 2. Select Departure date
+    System.out.println("Selecting DEPARTURE: " + departureDate);
 
-		
-		// 2. SELECT DEPARTURE
-		
+    selectDateFromOpenCalendar(
+        calendarPopup, departure, "DEPARTURE");
 
-		System.out.println("Selecting DEPARTURE: " + departureDate);
+    System.out.println("Departure selected: " + departureDate);
 
-		selectDateFromOpenCalendar(calendarPopup, departure, "DEPARTURE");
+    // 3. Select Return date in the same open calendar
+    System.out.println("Selecting RETURN from SAME calendar: " + returnDate);
 
-		System.out.println("Departure selected: " + departureDate);
+    selectDateFromOpenCalendar(
+        calendarPopup, returnDt, "RETURN");
 
-		// 3. SAME CALENDAR -> SELECT RETURN
-		
+    System.out.println("Return selected: " + returnDate);
+    System.out.println("Both dates selected.");
 
-		System.out.println("Selecting RETURN from SAME calendar: " + returnDate);
+    // Do not click Continue or open another calendar here.
+    System.out.println("===== ROUND TRIP DATE SELECTION COMPLETED =====");
+}
 
-		selectDateFromOpenCalendar(calendarPopup, returnDt, "RETURN");
-
-		System.out.println("Return selected: " + returnDate);
-
-		System.out.println("Both departure and return dates selected.");
-
-		System.out.println("===== ROUND TRIP DATE SELECTION COMPLETED =====");
-	}
 
 //	public void closeRoundTripCalendar() throws Throwable {
 //
@@ -1415,8 +1506,12 @@ public class WebdriverUtility {
 		for (int attempt = 0; attempt < 24; attempt++) {
 
 			WebElement calendar = wait.until(ExpectedConditions.visibilityOfElementLocated(calendarPopupLocator));
+			
+			System.out.println(
+				    "ACTUAL CALENDAR TEXT = [" + calendar.getText() + "]");
 
 			String calendarText = calendar.getText();
+			Thread.sleep(20000);
 
 			List<YearMonth> displayedMonths = getDisplayedMonths(calendarText);
 
@@ -1557,52 +1652,103 @@ public class WebdriverUtility {
 		return months;
 	}
 
-	private WebElement findDateElementInsideCorrectMonth(WebElement calendarPopup, YearMonth targetMonth,
-			int targetDay) {
 
-		String fullMonthText = targetMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " "
-				+ targetMonth.getYear();
+private WebElement findDateElementInsideCorrectMonth(
+        WebElement calendarPopup,
+        YearMonth targetMonth,
+        int targetDay) {
 
-		String shortMonthText = targetMonth.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + " "
-				+ targetMonth.getYear();
+    String fullMonthText =
+            targetMonth.getMonth()
+                    .getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+            + " " + targetMonth.getYear();
 
-		By monthHeaderLocator = By.xpath(
-				".//*[normalize-space(.)='" + fullMonthText + "' or normalize-space(.)='" + shortMonthText + "']");
+    String shortMonthText =
+            targetMonth.getMonth()
+                    .getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+            + " " + targetMonth.getYear();
 
-		List<WebElement> monthHeaders = calendarPopup.findElements(monthHeaderLocator);
+    // Locate all month headers in displayed order
+    By monthHeaderLocator = By.xpath(
+            ".//span[contains(@class,'month')]");
 
-		for (WebElement monthHeader : monthHeaders) {
+    List<WebElement> monthHeaders =
+            calendarPopup.findElements(monthHeaderLocator);
 
-			WebElement current = monthHeader;
+    int targetMonthIndex = -1;
 
-			for (int level = 0; level < 8; level++) {
+    for (int i = 0; i < monthHeaders.size(); i++) {
 
-				try {
+        String headerText = monthHeaders.get(i).getText().trim();
 
-					List<WebElement> dates = current.findElements(By.xpath(".//td["
-							+ "not(contains(@class,'disabled')) " + "and not(contains(@class,'is-disabled'))" + "]"
-							+ "[.//span[normalize-space()='" + targetDay + "']" + " or .//div[normalize-space()='"
-							+ targetDay + "']" + " or normalize-space()='" + targetDay + "']"));
+        if (headerText.equalsIgnoreCase(fullMonthText)
+                || headerText.equalsIgnoreCase(shortMonthText)) {
 
-					for (WebElement date : dates) {
+            targetMonthIndex = i;
 
-						if (date.isDisplayed()) {
-							return date;
-						}
-					}
+            System.out.println(
+                    "Target month found: " + headerText
+                    + " | Header index: " + i);
 
-					current = current.findElement(By.xpath(".."));
+            break;
+        }
+    }
 
-				} catch (Exception e) {
-					break;
-				}
-			}
-		}
+    if (targetMonthIndex == -1) {
+        System.out.println("Month header not found: " + fullMonthText);
+        return null;
+    }
 
-		return null;
-	}
+    // Locate calendar tables in displayed order
+    List<WebElement> calendarTables =
+            calendarPopup.findElements(
+                    By.xpath(
+                            ".//div[contains(@class,'calendar-months')]/table"));
 
-    
+    System.out.println(
+            "Calendar tables found: " + calendarTables.size());
+
+    // Match the target month header to its corresponding table
+    if (targetMonthIndex >= calendarTables.size()) {
+        System.out.println(
+                "No calendar table found for: " + fullMonthText);
+        return null;
+    }
+
+    WebElement targetMonthTable =
+            calendarTables.get(targetMonthIndex);
+
+    // Search the target day ONLY inside the matched month table
+    List<WebElement> dates = targetMonthTable.findElements(
+            By.xpath(
+                    ".//td[not(contains(@class,'disabled'))]"
+                    + "[not(contains(@class,'is-disabled'))]"
+                    + "[.//span[normalize-space()='" + targetDay + "']"
+                    + " or .//div[normalize-space()='" + targetDay + "']"
+                    + " or normalize-space()='" + targetDay + "']"));
+
+    for (WebElement date : dates) {
+
+        if (date.isDisplayed()) {
+
+            System.out.println(
+                    "Date found: " + targetDay
+                    + " in " + fullMonthText);
+
+            return date;
+        }
+    }
+
+    System.out.println(
+            "Date not found: " + targetDay
+            + " in " + fullMonthText);
+
+    return null;
+}
+
+	
+	
+	
 
 	public void waitForAttributeValue(WebElement element, String attribute, String expectedValue) {
 
@@ -2502,10 +2648,19 @@ public class WebdriverUtility {
 	                    )
 	            );
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            continueBtn
-	    );
+	    // ((JavascriptExecutor) driver).executeScript(
+	    //         "arguments[0].scrollIntoView({block:'center'});",
+	    //         continueBtn
+	    // );
+
+		((JavascriptExecutor) driver).executeScript(
+    "arguments[0].click();", continueBtn
+);
+wait.until(
+    ExpectedConditions.invisibilityOfElementLocated(calendarPopup)
+);
+
+System.out.println("Calendar popup closed successfully.");
 
 	    Thread.sleep(500);
 

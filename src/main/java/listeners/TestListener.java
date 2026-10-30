@@ -408,91 +408,118 @@ public class TestListener implements ITestListener {
     // LOG COMPANY PROFILE DATA
    
 
-    private void logCompanyProfileData(
-            ExtentTest test,
-            CompanyprofileData data) {
 
+private void logCompanyProfileData(
+        ExtentTest test,
+        CompanyprofileData data) {
 
-        test.info(
-                "<b>Test Case ID :</b> "
-                + data.getTestCaseID());
+    // Ye dono details har test case mein dikhen
+    test.info("<b>Test Case ID :</b> "
+            + formatValue(data.getTestCaseID()));
 
+    test.info("<b>Test Case Description :</b> "
+            + formatValue(data.getTestCaseDescripton()));
 
-        test.info(
-                "<b>Test Case Description :</b> "
-                + data.getTestCaseDescripton());
+    String testCaseId = formatValue(data.getTestCaseID()).trim();
 
+    // TC01 mein existing behaviour rakhein
+    if (testCaseId.equalsIgnoreCase("TC01")) {
 
-        test.info(
-                "<b>Industry :</b> "
-                + data.getIndustry());
+        test.info("<b>Industry :</b> "
+                + formatValue(data.getIndustry()));
 
+        test.info("<b>Company Registration ID :</b> "
+                + formatValue(data.getCompany_registration_ID()));
 
-        test.info(
-                "<b>Company Registration ID :</b> "
-                + data.getCompany_registration_ID());
+        test.info("<b>Tax Identification Number :</b> "
+                + formatValue(data.getTax_identification_number()));
 
+        test.info("<b>Country :</b> "
+                + formatValue(data.getCountry()));
 
-        test.info(
-                "<b>Tax Identification Number :</b> "
-                + data.getTax_identification_number());
+        test.info("<b>District :</b> "
+                + formatValue(data.getDistrict()));
 
+        test.info("<b>City :</b> "
+                + formatValue(data.getCity()));
 
-        test.info(
-                "<b>Country :</b> "
-                + data.getCountry());
+        test.info("<b>Postal Code :</b> "
+                + formatValue(data.getPostalCode()));
 
+        test.info("<b>Building Number :</b> "
+                + formatValue(data.getBuildingNumber()));
 
-        test.info(
-                "<b>District :</b> "
-                + data.getDistrict());
+        test.info("<b>Street Address :</b> "
+                + formatValue(data.getStreet_address()));
 
+        test.info("<b>Company Email :</b> "
+                + formatValue(data.getCompany_email()));
 
-        test.info(
-                "<b>City :</b> "
-                + data.getCity());
+        test.info("<b>Country Code :</b> "
+                + formatValue(data.getcountrycode()));
 
+        test.info("<b>Mobile Number :</b> "
+                + formatValue(data.getMobileNo()));
 
-        test.info(
-                "<b>Postal Code :</b> "
-                + data.getPostalCode());
+        test.info("<b>No Of Employees :</b> "
+                + formatValue(data.getNoOfEmployees()));
 
+        test.info("<b>Estimated Annual Travel Budget :</b> "
+                + formatValue(data.getEstimated_Annual_TravelBudget()));
 
-        test.info(
-                "<b>Building Number :</b> "
-                + data.getBuildingNumber());
+    } else {
 
+        // TC01 ke alawa blank fields ko skip karein
+        logFieldIfNotBlank(test, "Industry", data.getIndustry());
 
-        test.info(
-                "<b>Street Address :</b> "
-                + data.getStreet_address());
+        logFieldIfNotBlank(test, "Company Registration ID",
+                data.getCompany_registration_ID());
 
+        logFieldIfNotBlank(test, "Tax Identification Number",
+                data.getTax_identification_number());
 
-        test.info(
-                "<b>Company Email :</b> "
-                + data.getCompany_email());
+        logFieldIfNotBlank(test, "Country", data.getCountry());
 
+        logFieldIfNotBlank(test, "District", data.getDistrict());
 
-        test.info(
-                "<b>Country Code :</b> "
-                + data.getcountrycode());
+        logFieldIfNotBlank(test, "City", data.getCity());
 
+        logFieldIfNotBlank(test, "Postal Code", data.getPostalCode());
 
-        test.info(
-                "<b>Mobile Number :</b> "
-                + data.getMobileNo());
+        logFieldIfNotBlank(test, "Building Number",
+                data.getBuildingNumber());
 
+        logFieldIfNotBlank(test, "Street Address",
+                data.getStreet_address());
 
-        test.info(
-                "<b>No Of Employees :</b> "
-                + data.getNoOfEmployees());
+        logFieldIfNotBlank(test, "Company Email",
+                data.getCompany_email());
 
+        logFieldIfNotBlank(test, "Country Code",
+                data.getcountrycode());
 
-        test.info(
-                "<b>Estimated Annual Travel Budget :</b> "
-                + data.getEstimated_Annual_TravelBudget());
+        logFieldIfNotBlank(test, "Mobile Number",
+                data.getMobileNo());
+
+        logFieldIfNotBlank(test, "No Of Employees",
+                data.getNoOfEmployees());
+
+        logFieldIfNotBlank(test, "Estimated Annual Travel Budget",
+                data.getEstimated_Annual_TravelBudget());
     }
-    
+}
+
+private void logFieldIfNotBlank(
+        ExtentTest test,
+        String label,
+        Object value) {
+
+    if (value != null && !value.toString().trim().isEmpty()) {
+        test.info("<b>" + label + " :</b> "
+                + value.toString().trim());
+    }
+}
+
 
  // LOG FLIGHT BOOKING DATA
 
@@ -532,13 +559,26 @@ public class TestListener implements ITestListener {
                     + data.getReturndate());
         }
 
-        test.info(
-                "<b>Traveller Type :</b> "
-                + data.getTravellerType());
+        logFieldIfNotBlank(
+                test,
+                "Traveller Type",
+                data.getTravellerType()
+        );
+        logFieldIfNotBlank(
+                test,
+                "Employee Details",
+                data.getEmployeedetails()
+        );
 
         test.info(
-                "<b>Employee Details :</b> "
-                + data.getEmployeedetails());
+                "<b>Payment Method :</b> "
+                + data.getPaymentMethod());
+        test.info(
+                "<b>PNR :</b> "
+                + ExtentTestManager.getPnrMarker(
+                        data.getTestCaseId()
+                )
+        );
 
      
     }
