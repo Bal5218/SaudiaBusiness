@@ -1,15 +1,13 @@
 package flightBookingPage;
 
 import java.time.Duration;
-import java.util.HashSet;
+
 import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -18,15 +16,20 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
-import com.aventstack.extentreports.ExtentTest;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.TimeoutException;
 
 import base.BasePage;
-import constants.FrameworkConstants;
+
 import modeles.FlightBookingData;
+import reports.ExtentTestManager;
 import reports.ReportUtil;
 import utilities.ExcelUtil;
 import utilities.Ipathconstant;
 import utilities.WebdriverUtility;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 
 public class FlightBookingForAllPaxPage extends BasePage {
 
@@ -101,14 +104,33 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	// Trip Category
 
-	@FindBy(xpath = "//mat-radio-button[.//*[normalize-space()='Business trip']]")
-	private WebElement BusinessTripRadioBtn;
+	// @FindBy(xpath = "//mat-radio-button[.//*[normalize-space()='Business trip']]")
+	// private WebElement BusinessTripRadioBtn;
 
-	@FindBy(xpath = "//mat-radio-button[.//*[normalize-space()='Family trip']]")
-	private WebElement FamilyTripRadioBtn;
+	// @FindBy(xpath = "//mat-radio-button[.//*[normalize-space()='Family trip']]")
+	// private WebElement FamilyTripRadioBtn;
+	By FamilyTripRadioBtn = By.xpath(
+    "//mat-radio-button[.//*[normalize-space()='Family trip']]"
+);
+By BusinessTripRadioBtn = By.xpath(
+    "//mat-radio-button[.//*[normalize-space()='Business trip']]"
+);
 
-	@FindBy(xpath = "//button[normalize-space()='Apply selection']")
-	private WebElement ApplySelectionBtn;
+
+	// @FindBy(xpath = "//button[normalize-space()='Apply selection']")
+	// private WebElement ApplySelectionBtn;
+//   
+
+// private By ApplySelectionBtn = By.xpath(
+//     "//app-trip-selector//button[.//span[normalize-space()='Apply selection']]"
+// );
+
+By ApplySelectionBtn = By.xpath(
+    "//button[normalize-space(.)='Apply selection' " +
+    "or .//span[normalize-space()='Apply selection']]"
+);
+
+
 
 	@FindBy(xpath = "//mat-form-field[.//label[contains(normalize-space(.),'Passengers and cabin')]]")
 	private WebElement PassengerDetailDropdown;
@@ -121,10 +143,17 @@ public class FlightBookingForAllPaxPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'age-details')][.//p[normalize-space()='Infants on lap']]//button[.//mat-icon[normalize-space()='Add']]")
 	private WebElement infantLapPlusBtn;
+	
+	
 
-	@FindBy(xpath = "//mat-form-field[.//label[contains(normalize-space(.),'Booking details')]]")
+//	@FindBy(xpath = "//mat-form-field[.//label[contains(normalize-space(.),'Booking details')]]")
+//	private WebElement TravelCalssDropdown;
+	
+	@FindBy(xpath = "//mat-form-field[.//label[" +
+	        "contains(normalize-space(.),'Booking details') " +
+	        "or contains(normalize-space(.),'Trip type')]]")
 	private WebElement TravelCalssDropdown;
-
+	
 	@FindBy(xpath = "//mat-form-field[.//label[contains(normalize-space(),'Employee details')]]//input")
 	private WebElement EmployeeDetailsTextbox;
 
@@ -134,9 +163,11 @@ public class FlightBookingForAllPaxPage extends BasePage {
 	@FindBy(xpath = "//button[contains(@class,'add-multicity-flight') and .//span[normalize-space()='Add flight']]")
 	private WebElement AddFlightbtn;
 
-	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
-	private WebElement acceptCookieBtn;
+//	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
+//	private WebElement acceptCookieBtn;
 
+	@FindBy(xpath = "//button[contains(@class,'button--primary-small') and .//span[normalize-space()='Accept']]")
+	private WebElement acceptCookieBtn;
 
 //	private WebElement EmployeeDetailsTextBox;
 
@@ -183,8 +214,8 @@ private By termsCheckbox = By
 
 	// Pay jow btn
 
-	@FindBy(xpath = "//button[.//span[normalize-space()='Pay now']]")
-	private WebElement Paynowbtn;
+@FindBy(xpath = "//button[.//span[normalize-space()='Pay now'] and not(contains(@class,'d-none'))]")
+private WebElement Paynowbtn;
 
 
 
@@ -202,8 +233,13 @@ private By termsCheckbox = By
 			"//div[contains(@class,'toast-msg__hold')]//span[@class='toast-header' and normalize-space()='This booking is on hold.']");
 
 	// tct page
-	private By bookingReference = By.xpath("(//div[contains(@class,'pnr-wrapper__data')]"
-			+ "[.//p[normalize-space()='Booking reference']]" + "//p[contains(@class,'pnr-info')])[1]");
+	// private By bookingReference = By.xpath("(//div[contains(@class,'pnr-wrapper__data')]"
+	// 		+ "[.//p[normalize-space()='Booking reference']]" + "//p[contains(@class,'pnr-info')])[1]");
+
+	By bookingReference = By.xpath(
+    "//*[normalize-space()='Booking reference']/following::p[1]"
+);
+
 
 	private By airlineBookingReference = By.xpath("(//div[contains(@class,'pnr-wrapper__data')]"
 			+ "[.//p[normalize-space()='Airline booking reference']]" + "//p[contains(@class,'pnr-info')])[1]");
@@ -223,7 +259,7 @@ private By termsCheckbox = By
 	@FindBy(xpath = "//input[@formcontrolname='DOB']")
 	private WebElement DOBInputTextbox;
 
-	@FindBy(xpath = "//ng-select[@placeholder='Nationality']")
+	@FindBy(xpath = "//ng-select[@formcontrolname='countryControl']")
 	private WebElement NationalityDropdown;
 
 	@FindBy(xpath = "//input[@formcontrolname='PPNo']")
@@ -257,6 +293,7 @@ private By termsCheckbox = By
 	private WebElement secondTotxtBox;
 	
 	@FindBy(xpath = "(//input[@formcontrolname='toLocationControl'])[3]")
+	
 	private WebElement thirdTotxtBox;
 
 	@FindBy(xpath = "//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable']")
@@ -289,7 +326,9 @@ private By termsCheckbox = By
 		    "//mat-radio-group[@formcontrolname='selectedCardId']" +
 		    "//mat-radio-button[1]"
 		);
-
+	@FindBy(xpath = "(//mat-form-field[.//mat-label[normalize-space()='Security code']]//input)[1]")
+	private WebElement securityCodeTextbox;
+	
 	 private By savedCards =   By.xpath("//label[contains(normalize-space(),'Saved cards')]");
 	         
 
@@ -331,7 +370,11 @@ private By termsCheckbox = By
 
 	    private By cardinalIframe =
 	            By.id("Cardinal-CCA-IFrame");
-	         
+
+	          By guestTravelerRadio = By.xpath(
+	             "//mat-radio-button[.//*[normalize-space()='Guest traveler']]"
+	     );
+
 
 //	    private By terms = By.xpath("//input[@type='checkbox']");
 //	           
@@ -374,7 +417,8 @@ private By termsCheckbox = By
 	        // =====================================================
 	        // 1. GET BASIC DATA
 	        // =====================================================
-
+           WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(80));
+          wait.until(ExpectedConditions.elementToBeClickable(saudiaLogo));
 	        webdriverutility.click(saudiaLogo);
 
 	        String tripType = data.getTripType().trim();
@@ -396,7 +440,7 @@ private By termsCheckbox = By
 
 	        Thread.sleep(3000);
 
-
+	        webdriverutility.click(acceptCookieBtn);
 	        // =====================================================
 	        // 3. ENTER FLIGHT SEARCH DETAILS
 	        // =====================================================
@@ -411,9 +455,9 @@ private By termsCheckbox = By
 
 	            selectArrivalcity(data);
 
-	            webdriverutility.click(acceptCookieBtn);
+	        
 	            
-
+Thread.sleep(1000);
 	            webdriverutility.selectPikadayDate(
 	                    DepartureCalendaricon,
 	                    departureDateInput,
@@ -421,29 +465,29 @@ private By termsCheckbox = By
 	                    false,
 	                    null
 	            );
-
+	     
 	        }
 
-	        else if (tripType.equalsIgnoreCase("Round trip")) {
+	        
+else if (tripType.equalsIgnoreCase("Round trip")) {
 
-	            System.out.println("===== ROUND TRIP SEARCH =====");
+    System.out.println("===== ROUND TRIP SEARCH =====");
 
-	            selectDeparturecity(data);
+    selectDeparturecity(data);
+    selectArrivalcity(data);
 
-	            Thread.sleep(6000);
+//    webdriverutility.click(acceptCookieBtn);
+Thread.sleep(1000);
+    webdriverutility.selectRoundTripDates(
+        DepartureCalendaricon,
+        data.getDeparturedate(),
+        data.getReturndate()
+    );
 
-	            selectArrivalcity(data);
+    // Do not call closeRoundTripCalendar() here
 
-	            webdriverutility.click(acceptCookieBtn);
 
-	            Thread.sleep(8000);
-	            webdriverutility.selectRoundTripDates(
-	                    DepartureCalendaricon,
-	                    data.getDeparturedate(),
-	                    data.getReturndate()
-	            );
-
-	            webdriverutility.closeRoundTripCalendar();
+	           // webdriverutility.closeRoundTripCalendar();
 
 	        }
 
@@ -466,38 +510,146 @@ private By termsCheckbox = By
 	        // 4. TRAVELLER TYPE
 	        // =====================================================
 
-	        Thread.sleep(8000);
+	     
 
-	        TravellerType(data);
+	       // TravellerType(data);
+	        System.out.println("Traveller variable = [" + Traveller + "]");
+	        System.out.println("POJO Traveller Type = ["
+	                + data.getTravellerType() + "]");
+	        System.out.println("Test Case ID = [" + data.getTestCaseId() + "]");
+
+	     // =====================================================
+	     // 4. TRAVELLER TYPE
+	     // =====================================================
+
+	     System.out.println("Traveller = [" + Traveller + "]");
+	     System.out.println("Trip Category = [" + tripCategory + "]");
+
+	  // =====================================================
+	  // 4. TRAVELLER TYPE & TRIP CATEGORY
+	  // =====================================================
+
+	  if (!Traveller.isEmpty()) {
+
+	      TravellerType(data);
+
+	      ReportUtil.logIfNotBlank(
+	              "Traveller Type : ",
+	              Traveller
+	      );
+
+	  } else if (tripCategory.equalsIgnoreCase("Family trip")) {
+
+	      System.out.println(
+	              "Blank Traveller + Family Trip detected."
+	      );
+
+	      // First select Family Trip
+	      selectTripCategory(data);
+
+	      // Then select passenger counts from Excel
+	      selectFamilyPassengerCounts(data);
+
+	  } else {
+
+	      System.out.println(
+	              "Traveller Type is blank. Skipping."
+	      );
+	  }
 
 
+
+	System.out.println("Clicked outside Booking Details.");
 	        // =====================================================
 	        // 5. EMPLOYEE DETAILS
 	        // =====================================================
+//	if (Traveller != null
+//	        && Traveller.equalsIgnoreCase("Employee")) {
+//
+//
+//    String employeeEmail = data.getEmployeedetails();
+//System.out.println("Traveller = " + Traveller);
+//System.out.println("Employee details from Excel = "
+//        + data.getEmployeedetails());
+//    if (employeeEmail == null || employeeEmail.trim().isEmpty()) {
+//        throw new IllegalArgumentException(
+//                "Employee details is blank in Excel.");
+//    }
+//
+//    employeeEmail = employeeEmail.trim();
+//    if (webdriverutility.isElementDisplayed(EmployeeDetailsTextbox)) {
+//    wait.until(ExpectedConditions.elementToBeClickable(
+//            EmployeeDetailsTextbox));
+//
+//    EmployeeDetailsTextbox.click();
+//    EmployeeDetailsTextbox.clear();
+//    EmployeeDetailsTextbox.sendKeys(employeeEmail);
+//    ReportUtil.logIfNotBlank(
+//    	    "Employee Details : ", employeeEmail);
+//    ReportUtil.attachFullPageScreenshot(
+//            driver,
+//            "Search data is entered"
+//    );
+//
+//    System.out.println("Employee details entered: " + employeeEmail);
+//	            By employeeSuggestion = By.xpath(
+//	                    "//mat-option[@role='option']"
+//	                  + "[.//*[contains(normalize-space(),'"
+//	                  + employeeEmail
+//	                  + "')]]"
+//	            );
+//
+//	            webdriverutility.clickWithRetry(
+//	                    employeeSuggestion
+//	            );
+//	        }
+//}
+	      
+	if (Traveller.equalsIgnoreCase("Employee")) {
 
-	        if (Traveller.equalsIgnoreCase("Employee")) {
+	    String employeeEmail = data.getEmployeedetails();
 
-	            String employeeEmail =
-	                    data.getEmployeedetails().trim();
+	    if (employeeEmail != null
+	            && !employeeEmail.trim().isEmpty()) {
 
-	            webdriverutility.sendKeys(
-	                    EmployeeDetailsTextbox,
+	        employeeEmail = employeeEmail.trim();
+
+	        if (webdriverutility.isElementDisplayed(
+	                EmployeeDetailsTextbox)) {
+
+	            wait.until(ExpectedConditions.elementToBeClickable(
+	                    EmployeeDetailsTextbox));
+
+	            EmployeeDetailsTextbox.click();
+	            EmployeeDetailsTextbox.clear();
+	            EmployeeDetailsTextbox.sendKeys(employeeEmail);
+
+	            ReportUtil.logIfNotBlank(
+	                    "Employee Details : ",
 	                    employeeEmail
+	            );
+
+	            ReportUtil.attachFullPageScreenshot(
+	                    driver,
+	                    "Search data is entered"
 	            );
 
 	            By employeeSuggestion = By.xpath(
 	                    "//mat-option[@role='option']"
-	                  + "[.//*[contains(normalize-space(),'"
-	                  + employeeEmail
-	                  + "')]]"
+	                    + "[.//*[contains(normalize-space(),'"
+	                    + employeeEmail + "')]]"
 	            );
 
-	            webdriverutility.clickWithRetry(
-	                    employeeSuggestion
-	            );
+	            webdriverutility.clickWithRetry(employeeSuggestion);
 	        }
-	             	
-	
+
+	    } else {
+
+	        System.out.println(
+	                "Employee Details blank. Skipping employee details."
+	        );
+	    }
+	}
 
 
 	        // =====================================================
@@ -507,11 +659,11 @@ private By termsCheckbox = By
 	        webdriverutility.waitForVisibility(
 	                SearchFlightbtn
 	        );
-
 	        ReportUtil.attachFullPageScreenshot(
 	                driver,
 	                "Search data is entered"
 	        );
+	     
 
 	        Thread.sleep(7000);
 
@@ -561,7 +713,7 @@ private By termsCheckbox = By
 	            // =================================================
 
 	            if (Traveller.equalsIgnoreCase("Employee")
-	                    && tripCategory.equalsIgnoreCase("Family trip")) {
+	                    && tripCategory.equalsIgnoreCase("Family trip") || tripCategory.equalsIgnoreCase("Family trip")){
 
 	                System.out.println(
 	                        "Employee + Family Trip detected."
@@ -662,19 +814,46 @@ Thread.sleep(3000);
 	            // EMPLOYEE + FAMILY TRIP
 	            // =================================================
 
-	            if (Traveller.equalsIgnoreCase("Employee")
-	                    && tripCategory.equalsIgnoreCase("Family trip")) {
+//	            if (Traveller.equalsIgnoreCase("Employee")
+//	                    && tripCategory.equalsIgnoreCase("Family trip")) {
+//
+//	                System.out.println(
+//	                        "Employee + Family Trip detected."
+//	                );
+//
+//	              Thread.sleep(3000);
+//
+//	                Adddependent(data);
+//	            }
 
-	                System.out.println(
-	                        "Employee + Family Trip detected."
-	                );
+	         // FAMILY TRIP - ADD SAVED DEPENDENTS
 
-	              Thread.sleep(3000);
+	            if (tripCategory.equalsIgnoreCase("Family trip")) {
 
-	                Adddependent(data);
+	                System.out.println("Family Trip detected.");
+
+	                Thread.sleep(3000);
+
+	                String dependentNames = data.getdependentName();
+
+	                if (dependentNames != null
+	                        && !dependentNames.trim().isEmpty()) {
+
+	                    System.out.println("Adding saved dependents from Excel.");
+
+	                    Adddependent(data);
+
+	                    System.out.println(
+	                            "All saved dependents added successfully."
+	                    );
+
+	                } else {
+
+	                    System.out.println(
+	                            "Dependent name is blank. Skipping dependent selection."
+	                    );
+	                }
 	            }
-
-
 	            // =================================================
 	            // GUEST TRAVELER
 	            // =================================================
@@ -698,9 +877,7 @@ Thread.sleep(3000);
 	                    ContinueToPaymentBtn
 	            );
 
-	            ReportUtil.logPass(
-	                    "Passenger details completed"
-	            );
+	            ReportUtil.attachFullPageScreenshot(driver,  "Passenger details completed");
 
 	            Thread.sleep(8000);
 
@@ -726,9 +903,7 @@ Thread.sleep(3000);
 
 	        selectPaymentMethod(data);
 
-	        ReportUtil.logPass(
-	                "Payment page is displayed"
-	        );
+	      
 
 
 	        try {
@@ -821,9 +996,6 @@ Thread.sleep(3000);
 	                "PNR was not generated."
 	        );
 
-	        ReportUtil.logPass(
-	                "PNR generated successfully: " + pnr
-	        );
 	    }
 	private void handleNormalFareFlow(
 	        String tripType) throws Throwable {
@@ -831,7 +1003,7 @@ Thread.sleep(3000);
 	    WebDriverWait wait =
 	            new WebDriverWait(
 	                    driver,
-	                    Duration.ofSeconds(60)
+	                    Duration.ofSeconds(90)
 	            );
 
 
@@ -888,8 +1060,9 @@ Thread.sleep(3000);
 	    );
 
 
-	    ReportUtil.logPass(
-	            "Result page is displayed"
+	    ReportUtil.attachFullPageScreenshot(
+	            driver,
+	            "Result page is dipalyed"
 	    );
 
 
@@ -1136,7 +1309,11 @@ private void handleMultiCityResultFlow() throws Throwable {
 	            false,
 	            null
 	    );
+	    new Actions(driver)
+        .moveToElement(EmployeeDetailsTextbox)
+        .perform();
 
+System.out.println("Mouse moved away from calendar.");
 
 	    // =====================================================
 	    // ADDITIONAL SEGMENTS FROM EXCEL
@@ -1319,197 +1496,376 @@ webdriverutility.click(acceptCookieBtn);
 		selectCity(TotxtBox, data.getTo());
 	}
 
-	public void TravellerType(FlightBookingData data) throws Throwable {
+public void TravellerType(FlightBookingData data) throws Throwable {
+	
+	
 
-	    String Traveller = data.getTravellerType().trim();
-	    String TripCategory = data.getTripCategory().trim();
+    String traveller = data.getTravellerType().trim();
+    String tripCategory = data.getTripCategory().trim();
 
-	    System.out.println("Traveller    = " + Traveller);
-	    System.out.println("TripCategory = " + TripCategory);
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
 
-	 
+    System.out.println("Traveller    = " + traveller);
+    System.out.println("TripCategory = " + tripCategory);
 
-	    if (Traveller.equalsIgnoreCase("Employee")) {
+    // 1. Open Booking Details
+    wait.until(ExpectedConditions.elementToBeClickable(TravelCalssDropdown));
+    webdriverutility.click(TravelCalssDropdown);
 
-	    
+    // 2. Select Traveller Type
+    if (traveller.equalsIgnoreCase("Employee")) {
 
-	        webdriverutility.click(TravelCalssDropdown);
+        wait.until(ExpectedConditions.elementToBeClickable(EmployeeRadiobtn));
+        webdriverutility.click(EmployeeRadiobtn);
 
-	       
+        System.out.println("Employee selected.");
 
-	        if (!EmployeeRadiobtn.getAttribute("class").contains("checked")) {
+    } else if (traveller.equalsIgnoreCase("Multiple travelers")) {
 
-	            webdriverutility.click(EmployeeRadiobtn);
+        wait.until(ExpectedConditions.elementToBeClickable(MultipleTravellerRadioBtn));
+        webdriverutility.click(MultipleTravellerRadioBtn);
 
-	        }
-	        
+        System.out.println("Multiple travelers selected.");
 
-	        else if (Traveller.equalsIgnoreCase(" Multiple travelers ")) {
+    } else if (traveller.equalsIgnoreCase("Guest traveler")) {
 
-		    
+        WebElement guestRadio = wait.until(
+        		
+                ExpectedConditions.elementToBeClickable(guestTravelerRadio));
 
-		        webdriverutility.click(TravelCalssDropdown);
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();", guestRadio);
 
-		       
-	        }
-		        else  if (!EmployeeRadiobtn.getAttribute("class").contains("checked")) {
+        System.out.println("Guest traveler selected.");
 
-		            webdriverutility.click(MultipleTravellerRadioBtn );
+        // Guest traveler: Business trip is selected automatically.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[normalize-space()='Business trip']")));
 
-		        }
-	        
+        // Apply Selection
+        WebElement applySelection = wait.until(
+                ExpectedConditions.elementToBeClickable(ApplySelectionBtn ));
 
-	      
-	        if (TripCategory.equalsIgnoreCase("Business trip")) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                applySelection);
 
-	            if (!BusinessTripRadioBtn.getAttribute("class").contains("checked")) {
+		
+        applySelection.click();
+//
+//        System.out.println(
+//                tripCategory + ": Apply Selection clicked.");
+//
+//        // Wait until Booking Details panel closes
+//        wait.until(
+//                ExpectedConditions.attributeToBe(
+//                        TravelCalssDropdown,
+//                        "aria-expanded",
+//                        "false"
+//                )
+//        );
+      
+//        wait.until(ExpectedConditions.elementToBeClickable(
+//                PassengerDetailDropdown
+//        ));
+//
+//        webdriverutility.click(PassengerDetailDropdown);
+//        System.out.println("Booking Details panel closed.");   
+        boolean passengerPanelOpen =
+                driver.findElements(By.xpath(
+                    "//div[contains(@class,'age-details')]"
+                    + "[.//p[normalize-space()='Adults']]"
+                    + "//button"
+                )).stream().anyMatch(WebElement::isDisplayed);
 
-	                webdriverutility.click(BusinessTripRadioBtn);
+        if (!passengerPanelOpen) {
 
-	            }
+            WebElement passengerDropdown = wait.until(
+                    ExpectedConditions.visibilityOf(PassengerDetailDropdown)
+            );
 
-	            // Business trip does NOT need passenger count here.
-	            webdriverutility.click(ApplySelectionBtn);
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    passengerDropdown
+            );
 
-	        }
+            try {
 
-	        else if (TripCategory.equalsIgnoreCase("Family trip")) {
+                wait.until(ExpectedConditions.elementToBeClickable(
+                        PassengerDetailDropdown
+                ));
 
-	       
+                PassengerDetailDropdown.click();
 
-	            if (!FamilyTripRadioBtn.getAttribute("class").contains("checked")) {
+            } catch (ElementClickInterceptedException e) {
 
-	                webdriverutility.click(FamilyTripRadioBtn);
+                System.out.println(
+                        "Normal click intercepted. Trying JavaScript click."
+                );
 
-	            }
+                ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].click();",
+                        PassengerDetailDropdown
+                );
+            }
+        }
 
-	            System.out.println("Family trip selected.");
+        // Wait until passenger controls are actually visible
+        wait.until(ExpectedConditions.visibilityOf(adultPlusBtn));
 
-	      
+        System.out.println("Passengers and cabin opened successfully.");
+        // Open Passengers and Cabin
+        wait.until(ExpectedConditions.elementToBeClickable(
+                PassengerDetailDropdown));
 
-	            int adults = parsePassengerCount(data.getAdults());
-	            int children = parsePassengerCount(data.getChildren());
-	            int infants = parsePassengerCount(data.getInfant());
+        webdriverutility.click(PassengerDetailDropdown);
 
-	            System.out.println("Adults   = " + adults);
-	            System.out.println("Children = " + children);
-	            System.out.println("Infants  = " + infants);
+        System.out.println("Passengers and cabin opened.");
 
-	          
-	            webdriverutility.click(ApplySelectionBtn);
+        // Select Adult Count
+        
+        
+        
+        
+        
+        int adults = parsePassengerCount(data.getAdults());
 
-	            
-	            WebDriverWait wait =
-	                    new WebDriverWait(driver, Duration.ofSeconds(30));
+        System.out.println("Guest adults = " + adults);
 
-	            wait.until(
-	                    ExpectedConditions.elementToBeClickable(
-	                            PassengerDetailDropdown
-	                    )
-	            );
+        if (adults < 1) {
+            throw new IllegalArgumentException(
+                    "Guest traveler must have at least one adult.");
+        }
 
-	            webdriverutility.click(PassengerDetailDropdown);
+        if (adults > 1) {
+        	wait.until(ExpectedConditions.elementToBeClickable(adultPlusBtn));
 
-	            System.out.println("Passengers and cabin opened.");
+            webdriverutility.clickMultipleTimes(
+                    adultPlusBtn, adults - 1);
+        }
 
-	           
+        // Continue
+        wait.until(ExpectedConditions.visibilityOf(Continuebtn));
 
-	            wait.until(
-	                    ExpectedConditions.visibilityOf(adultPlusBtn)
-	            );
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                Continuebtn);
 
-	           
+        wait.until(ExpectedConditions.elementToBeClickable(Continuebtn));
+        Continuebtn.click();
 
-	            if (adults > 1) {
+        System.out.println(
+                "Guest traveler passenger selection completed successfully.");
 
-	                webdriverutility.clickMultipleTimes(
-	                        adultPlusBtn,
-	                        adults - 1
-	                );
-	            }
+        return;
 
-	           
-	            if (children > 0) {
+    } else {
+        throw new IllegalArgumentException(
+                "Invalid Traveller Type: " + traveller);
+    }
 
-	                wait.until(
-	                        ExpectedConditions.visibilityOf(childPlusBtn)
-	                );
+    // 3. Employee and Multiple Travelers: Select Trip Category
+    
+  
+   
+By tripCategoryLocator;
 
-	                webdriverutility.clickMultipleTimes(
-	                        childPlusBtn,
-	                        children
-	                );
-	            }
+if (tripCategory.equalsIgnoreCase("Business trip")) {
 
-	          
+    tripCategoryLocator = BusinessTripRadioBtn;
 
-	            if (infants > 0) {
+} else if (tripCategory.equalsIgnoreCase("Family trip")) {
 
-	                wait.until(
-	                        ExpectedConditions.visibilityOf(infantLapPlusBtn)
-	                );
+    tripCategoryLocator = FamilyTripRadioBtn;
 
-	                webdriverutility.clickMultipleTimes(
-	                        infantLapPlusBtn,
-	                        infants
-	                );
-	            }
+} else {
 
-	            
+    throw new IllegalArgumentException(
+            "Invalid Trip Category: " + tripCategory);
+}
+wait.until(ExpectedConditions.elementToBeClickable(
+        TravelCalssDropdown));
 
-	            wait.until(
-	                    ExpectedConditions.visibilityOf(Continuebtn)
-	            );
+webdriverutility.click(TravelCalssDropdown);
 
-	            ((JavascriptExecutor) driver).executeScript(
-	                    "arguments[0].scrollIntoView({block:'center'});",
-	                    Continuebtn
-	            );
 
-	            wait.until(
-	                    ExpectedConditions.elementToBeClickable(Continuebtn)
-	            );
+WebElement categoryRadio = wait.until(
+        ExpectedConditions.elementToBeClickable(
+                tripCategoryLocator));
 
-	            System.out.println(
-	                    "Clicking Continue after passenger selection..."
-	            );
+((JavascriptExecutor) driver).executeScript(
+        "arguments[0].click();", categoryRadio);
 
-	            Continuebtn.click();
+System.out.println("Trip category selected: " + tripCategory);
+  
 
-	            System.out.println(
-	                    "Passenger selection completed successfully."
-	            );
-	        }
 
-	        else {
 
-	            throw new IllegalArgumentException(
-	                    "Invalid Trip Category for Employee: "
-	                    + TripCategory
-	            );
-	        }
-	    }
 
-	   
-	 
+// 4. Apply Selection — common for both categories
+
+WebElement applySelection = wait.until(
+        ExpectedConditions.elementToBeClickable(
+                ApplySelectionBtn));
+
+((JavascriptExecutor) driver).executeScript(
+        "arguments[0].scrollIntoView({block:'center'});",
+        applySelection);
+
+applySelection.click();
+
+
+System.out.println(
+        tripCategory + ": Apply Selection clicked."
+);
+
+// Wait for Booking Details panel to close
+wait.until(ExpectedConditions.invisibilityOfElementLocated(
+        By.xpath("//mat-radio-button[.//*[normalize-space()='Business trip']]")
+));
+
+System.out.println("Booking Details closed.");
+
+//Close any open calendar by clicking outside the popup
+((JavascriptExecutor) driver).executeScript(
+     "document.body.click();"
+);
+
+System.out.println("Clicked outside the calendar.");
+
+//Close Booking Details only if it is still open
+//boolean categoryStillVisible =
+//     driver.findElements(tripCategoryLocator)
+//           .stream()
+//           .anyMatch(WebElement::isDisplayed);
+//
+//if (categoryStillVisible) {
+//
+// webdriverutility.click(TravelCalssDropdown);
+//
+// wait.until(
+//         ExpectedConditions.invisibilityOfElementLocated(
+//                 tripCategoryLocator)
+// );
+//
+// System.out.println("Booking Details closed.");
+//
+//} else {
+// System.out.println("Booking Details already closed.");
+//}
+//Verify Employee Details field
+WebElement employeeDetails = wait.until(
+ ExpectedConditions.visibilityOfElementLocated(
+     By.xpath(
+         "//mat-form-field[.//label[contains(normalize-space(.),'Employee details')]]"
+     )
+ )
+);
+
+System.out.println(
+ "Employee Details visible = "
+ + employeeDetails.isDisplayed()
+);
+////Close Booking Details only if it is still open
+//if (driver.findElements(BusinessTripRadioBtn)
+//       .stream()
+//       .anyMatch(WebElement::isDisplayed)) {
+//
+// webdriverutility.click(TravelCalssDropdown);
+//
+// wait.until(
+//     ExpectedConditions.invisibilityOfElementLocated(
+//         BusinessTripRadioBtn
+//     )
+// );
+//
+// System.out.println("Booking Details closed.");
+//}
+// 5. Read Passenger Counts from Excel
+if (traveller.equalsIgnoreCase("Employee")
+        && tripCategory.equalsIgnoreCase("Family trip")) {
+
+int adults = parsePassengerCount(data.getAdults());
+int children = parsePassengerCount(data.getChildren());
+int infants = parsePassengerCount(data.getInfant());
+
+System.out.println("Adults   = " + adults);
+System.out.println("Children = " + children);
+System.out.println("Infants  = " + infants);
+wait.until(ExpectedConditions.elementToBeClickable(
+        PassengerDetailDropdown));
+webdriverutility.click(PassengerDetailDropdown);
+
+
+if (adults < 1 || children < 0 || infants < 0) {
+    throw new IllegalArgumentException(
+            "Invalid passenger counts in Excel.");
+}
+
+// 6. Open Passengers and Cabin
+
+
+System.out.println("Passengers and cabin opened.");
+
+
+//7. Select Adults
+if (adults > 1) {
+	   wait.until(ExpectedConditions.elementToBeClickable(adultPlusBtn));
+       webdriverutility.clickMultipleTimes(adultPlusBtn, adults - 1);
+}
+
+System.out.println("Adult count handled: " + adults);
+// 8. Select Children
+
+if (children > 0) {
+	 wait.until(ExpectedConditions.elementToBeClickable(childPlusBtn));
+     webdriverutility.clickMultipleTimes(childPlusBtn, children);
+}
+
+// 9. Select Infants
+
+if (infants > 0) {
+	  wait.until(ExpectedConditions.elementToBeClickable(infantLapPlusBtn));
+      webdriverutility.clickMultipleTimes(infantLapPlusBtn, infants);
+}
+
+// 10. Click Continue
+
+wait.until(ExpectedConditions.visibilityOf(Continuebtn));
+
+((JavascriptExecutor) driver).executeScript(
+        "arguments[0].scrollIntoView({block:'center'});",
+        Continuebtn);
+
+wait.until(ExpectedConditions.elementToBeClickable(Continuebtn));
+
+Continuebtn.click();
+
+System.out.println(
+        tripCategory + ": Passenger selection completed successfully.");
+
+} else {
+    System.out.println("Passenger count increase skipped for: "
+            + traveller + " + " + tripCategory);
+}
 	 // =========================================================
 	 // GUEST TRAVELER
 	 // =========================================================
 
-	 else if (Traveller.equalsIgnoreCase("Guest traveler")) {
+	 if (traveller.equalsIgnoreCase("Guest traveler")) {
 
 	     System.out.println(
 	             "===== GUEST TRAVELER SELECTION STARTED ====="
 	     );
 
-	     WebDriverWait wait =
+	     WebDriverWait wait2=
 	             new WebDriverWait(driver, Duration.ofSeconds(30));
 
 	     // ---------------------------------------------------------
 	     // 1. OPEN BOOKING DETAILS
 	     // ---------------------------------------------------------
 
-	     wait.until(
+	     wait2.until(
 	             ExpectedConditions.elementToBeClickable(
 	                     TravelCalssDropdown
 	             )
@@ -1530,9 +1886,9 @@ webdriverutility.click(acceptCookieBtn);
 	     // 2. SELECT GUEST TRAVELER
 	     // ---------------------------------------------------------
 
-	     By guestTravelerRadio = By.xpath(
-	             "//mat-radio-button[.//*[normalize-space()='Guest traveler']]"
-	     );
+	    //  By guestTravelerRadio = By.xpath(
+	    //          "//mat-radio-button[.//*[normalize-space()='Guest traveler']]"
+	    //  );
 
 	     WebElement guestRadio = wait.until(
 	             ExpectedConditions.visibilityOfElementLocated(
@@ -1577,43 +1933,21 @@ webdriverutility.click(acceptCookieBtn);
 	             "Business trip is displayed automatically."
 	     );
 
-	     // ---------------------------------------------------------
-	     // 4. APPLY SELECTION
-	     // ---------------------------------------------------------
-
-	     WebElement applySelection = wait.until(
-	             ExpectedConditions.elementToBeClickable(
-	                     ApplySelectionBtn
-	             )
-	     );
-
-	     ((JavascriptExecutor) driver).executeScript(
-	             "arguments[0].scrollIntoView({block:'center'});",
-	             applySelection
-	     );
-
-	     applySelection.click();
-
-	     System.out.println(
-	             "Apply selection clicked."
-	     );
-
+	   
 	     // ---------------------------------------------------------
 	     // 5. OPEN PASSENGERS AND CABIN
 	     // ---------------------------------------------------------
 
-	     WebElement passengerDropdown = wait.until(
-	             ExpectedConditions.elementToBeClickable(
-	                     PassengerDetailDropdown
-	             )
-	     );
+	     wait.until(ExpectedConditions.invisibilityOfElementLocated(
+	    	        By.xpath("//div[contains(@class,'calendar-popup') " +
+	    	                 "and contains(@class,'homepageCalender')]")
+	    	));
 
-	     ((JavascriptExecutor) driver).executeScript(
-	             "arguments[0].scrollIntoView({block:'center'});",
-	             passengerDropdown
-	     );
+	    	wait.until(ExpectedConditions.elementToBeClickable(
+	    	        PassengerDetailDropdown
+	    	));
 
-	     passengerDropdown.click();
+	    	webdriverutility.click(PassengerDetailDropdown);
 
 	     System.out.println(
 	             "Passengers and cabin opened."
@@ -1623,10 +1957,10 @@ webdriverutility.click(acceptCookieBtn);
 	     // 6. ADULT COUNT
 	     // ---------------------------------------------------------
 
-	     int adults = Integer.parseInt(
-	             data.getAdults().trim()
-	     );
-
+	    //  int adults = Integer.parseInt(
+	    //          data.getAdults().trim()
+	    //  );
+	     int adults = parsePassengerCount(data.getAdults());
 	     System.out.println(
 	             "No. of adults: " + adults
 	     );
@@ -1837,6 +2171,97 @@ webdriverutility.click(acceptCookieBtn);
 
 	}
 
+	public void selectTripCategory(FlightBookingData data)
+	        throws Throwable {
+
+	    WebDriverWait wait =
+	            new WebDriverWait(driver, Duration.ofSeconds(60));
+
+	    String tripCategory = data.getTripCategory().trim();
+
+	    // 1. Close calendar popup
+	   
+	    ((JavascriptExecutor) driver).executeScript(
+	            "document.body.click();"
+	    );
+
+
+	    System.out.println("Calendar popup closed.");
+
+	    // 2. Open Trip Type dropdown
+	    By tripTypeDropdown = By.xpath(
+	            "//mat-form-field[.//*[normalize-space()='Trip type']]"
+	    );
+
+	    WebElement dropdown = wait.until(
+	            ExpectedConditions.elementToBeClickable(tripTypeDropdown)
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            dropdown
+	    );
+
+	    dropdown.click();
+
+	    System.out.println("Trip Type dropdown opened.");
+
+	    // 3. Select category
+	    By tripCategoryLocator;
+
+	    if (tripCategory.equalsIgnoreCase("Business trip")) {
+
+	        tripCategoryLocator = BusinessTripRadioBtn;
+
+	    } else if (tripCategory.equalsIgnoreCase("Family trip")) {
+
+	        tripCategoryLocator = FamilyTripRadioBtn;
+
+	    } else {
+
+	        throw new IllegalArgumentException(
+	                "Invalid Trip Category: " + tripCategory
+	        );
+	    }
+
+	    WebElement categoryRadio = wait.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    tripCategoryLocator
+	            )
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].click();",
+	            categoryRadio
+	    );
+
+	    System.out.println("Selected category: " + tripCategory);
+
+	    // 4. Apply selection
+	    WebElement applySelection = wait.until(
+	            ExpectedConditions.elementToBeClickable(
+	                    ApplySelectionBtn
+	            )
+	    );
+
+	    ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            applySelection
+	    );
+
+	    applySelection.click();
+
+	    // 5. Wait until category popup closes
+	    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+	            tripCategoryLocator
+	    ));
+
+	    System.out.println(
+	            tripCategory + " applied successfully."
+	    );
+	}
+
+
 	
 //	public void Adultdetails(FlightBookingData data) throws Throwable {
 //
@@ -1988,7 +2413,6 @@ webdriverutility.click(acceptCookieBtn);
 	        );
 
 	        try {
-
 	            continueButton.click();
 
 	        } catch (ElementClickInterceptedException e) {
@@ -2003,7 +2427,6 @@ webdriverutility.click(acceptCookieBtn);
 	                    continueButton
 	            );
 	        }
-
 	        System.out.println(
 	                "Calendar Continue clicked."
 	        );
@@ -2511,7 +2934,85 @@ ReportUtil.logPass("These Dependents are going to Add");
 	    );
 	    webdriverutility.click(Addbtn);
 	}
-	
+
+private void selectFamilyPassengerCounts(FlightBookingData data)
+        throws Throwable {
+
+    WebDriverWait wait =
+            new WebDriverWait(driver, Duration.ofSeconds(40));
+
+    // Read passenger counts from Excel
+    int adults = parsePassengerCount(data.getAdults());
+    int children = parsePassengerCount(data.getChildren());
+    int infants = parsePassengerCount(data.getInfant());
+
+    System.out.println("===== FAMILY PASSENGER SELECTION =====");
+    System.out.println("Adults   = " + adults);
+    System.out.println("Children = " + children);
+    System.out.println("Infants  = " + infants);
+
+    // Validate Excel data
+    if (adults < 1 || children < 0 || infants < 0) {
+        throw new IllegalArgumentException(
+                "Invalid Family Trip passenger counts in Excel.");
+    }
+
+    // Open Passengers and Cabin
+    wait.until(ExpectedConditions.elementToBeClickable(
+            PassengerDetailDropdown));
+
+    webdriverutility.click(PassengerDetailDropdown);
+
+    System.out.println("Passengers and cabin opened.");
+
+    // Adult default count = 1
+    if (adults > 1) {
+
+        wait.until(ExpectedConditions.elementToBeClickable(
+                adultPlusBtn));
+
+        webdriverutility.clickMultipleTimes(
+                adultPlusBtn, adults - 1);
+    }
+
+    // Select Children
+    if (children > 0) {
+
+        wait.until(ExpectedConditions.elementToBeClickable(
+                childPlusBtn));
+
+        webdriverutility.clickMultipleTimes(
+                childPlusBtn, children);
+    }
+
+    // Select Infants on lap
+    if (infants > 0) {
+
+        wait.until(ExpectedConditions.elementToBeClickable(
+                infantLapPlusBtn));
+
+        webdriverutility.clickMultipleTimes(
+                infantLapPlusBtn, infants);
+    }
+
+    System.out.println("Family passenger counts selected successfully.");
+
+    // Click Continue
+    wait.until(ExpectedConditions.visibilityOf(Continuebtn));
+
+    ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].scrollIntoView({block:'center'});",
+            Continuebtn);
+
+    wait.until(ExpectedConditions.elementToBeClickable(
+            Continuebtn));
+
+    Continuebtn.click();
+
+    System.out.println(
+            "Family Trip passenger selection completed.");
+}
+
 	private void Adddependent(FlightBookingData data)
 	        throws Throwable {
 
@@ -2558,14 +3059,57 @@ ReportUtil.logPass("These Dependents are going to Add");
 	                "Unsupported payment method: " + paymentMethod
 	        );
 	    }
+//	    ExtentTestManager.getTest()
+//        .info("<b>payment method :</b> " + paymentMethod);
+		WebElement pnrElement = wait.until(
+	    		ExpectedConditions.visibilityOfElementLocated(
+	    		bookingReference));
+
+	    		String pnr = pnrElement.getText().trim();
+	    		
+	    		ExtentTestManager.setRuntimePnr(
+	    		        ExtentTestManager.getTestCaseId(),
+	    		        pnr
+	    		);
+
+	    		// Existing logging remains unchanged
+	    	
+
+	    		System.out.println("PNR = " + pnr);
+	    		 
+	    		Assert.assertFalse(
+	    		pnr.isEmpty(),
+	    		"PNR was not generated.");
+	    		System.out.println("STEP 1: Booking confirmed");
+	    		System.out.println("STEP 2: PNR extracted = " + pnr);
+
+	    		ExcelUtil.updateExcelCell(
+	    			    Ipathconstant.excelfile_path,
+	    			    "FlightBookingData",
+	    			    data.getTestCaseId(),
+	    			    "PNR",
+	    			    pnr
+	    			);
+	    		System.out.println(Ipathconstant.excelfile_path);
+
+	    		ReportUtil.logPass("Booking reference saved successfully");
+	    
 	    
 	}
 	
 	private void selectSavedCard(FlightBookingData data) throws Throwable {
+		By amexCardLocator = By.xpath(
+			    "//mat-radio-group[@formcontrolname='selectedCardId']"
+			    + "//mat-radio-button[.//*[contains(normalize-space(.),"
+			    + "'American Express')]]"
+			);
+
 
 	    WebDriverWait wait =
 	            new WebDriverWait(driver, Duration.ofSeconds(60));
 
+	    String paymentMethod = data.getPaymentMethod().trim();
+	    String SavedCardName=data.getSavedCardName().trim();
 
 	    WebElement savedPanel = wait.until(
 	            ExpectedConditions.elementToBeClickable(savedCardsHeader)
@@ -2577,31 +3121,49 @@ ReportUtil.logPass("These Dependents are going to Add");
 	    );
 
 	    savedPanel.click();
-
 	    System.out.println("Saved cards panel opened.");
 
+	    if (SavedCardName.equalsIgnoreCase("American Express")) {
+	    	WebElement card = wait.until(
+	    		    ExpectedConditions.elementToBeClickable(amexCardLocator)
+	    		);
 
-	    
-	    WebElement card = wait.until(
-	            ExpectedConditions.elementToBeClickable(savedCardRadio)
-	    );
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center'});",
+	                card
+	        );
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            card
-	    );
+	        card.click();
+	        System.out.println("American Express selected.");
 
-	    card.click();
+	        // American Express Security Code
+//	        WebElement securityCode = wait.until(
+//	                ExpectedConditions.visibilityOf(securityCodeTextbox)
+//	        );
+//
+//	        ((JavascriptExecutor) driver).executeScript(
+//	                "arguments[0].scrollIntoView({block:'center'});",
+//	                securityCode
+//	        );
+//
+//	        wait.until(ExpectedConditions.elementToBeClickable(securityCode));
+//
+//	        securityCode.click();
+//	        securityCode.sendKeys(data.getSecurityCode());
 
-	    System.out.println("Saved card selected.");
+	        System.out.println("American Express security code entered.");
 
+	    } else if (SavedCardName.equalsIgnoreCase("Visa")) {
 
-	   
+	        webdriverutility.click(VisaCardRadiobtn);
 
-	    webdriverutility.click(VisaCardRadiobtn);
+	        System.out.println("Visa card selected.");
 
-
-	  
+	    } else {
+	        throw new IllegalArgumentException(
+	                "Unsupported payment method: " + paymentMethod
+	        );
+	    }
 
 	    WebElement terms = wait.until(
 	            ExpectedConditions.elementToBeClickable(termsCheckbox)
@@ -2613,11 +3175,7 @@ ReportUtil.logPass("These Dependents are going to Add");
 	    );
 
 	    terms.click();
-
 	    System.out.println("Terms and Conditions selected.");
-
-
-	  
 
 	    WebElement payNow = wait.until(
 	            ExpectedConditions.elementToBeClickable(Paynowbtn)
@@ -2628,21 +3186,12 @@ ReportUtil.logPass("These Dependents are going to Add");
 	            payNow
 	    );
 
-	   // payNow.click();
-	    
-	    WebElement payNow1= wait.until(
-	            ExpectedConditions.elementToBeClickable(Paynowbtn)
-	    );
+	    Thread.sleep(5000);
 
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            payNow1
-	    );
-Thread.sleep(5000);
 	    payNow.click();
 
 	    System.out.println("Pay Now clicked.");
-
+	
 	    // Cardinal 3DS OTP
 	  //  handleCardinalFrame(data);
 	    
@@ -2711,9 +3260,35 @@ Thread.sleep(5000);
 	    );
 
 	    System.out.println("Booking confirmed successfully.");
+
+		WebElement pnrElement = wait.until(
+	    		ExpectedConditions.visibilityOfElementLocated(
+	    		bookingReference));
+
+	    		String pnr = pnrElement.getText().trim();
+
+	    		System.out.println("PNR = " + pnr);
+
+	    		Assert.assertFalse(
+	    		pnr.isEmpty(),
+	    		"PNR was not generated.");
+	    		System.out.println("STEP 1: Booking confirmed");
+	    		System.out.println("STEP 2: PNR extracted = " + pnr);
+
+	    		ExcelUtil.updateExcelCell(
+	    			    Ipathconstant.excelfile_path,
+	    			    "FlightBookingData",
+	    			    data.getTestCaseId(),
+	    			    "PNR",
+	    			    pnr
+	    			);
+	    		System.out.println(Ipathconstant.excelfile_path);
+
+	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
+	    
 	}
 	
-	
+
 	private void selectSadad(FlightBookingData data) throws Throwable {
 		
 		String paymentMethod = data.getPaymentMethod().trim();
@@ -2764,8 +3339,54 @@ Thread.sleep(5000);
 	    );
 
 	    // 3. Pay Now
+	 // 3. Pay Now
+	    try {
+	        By payNowLocator = By.xpath(
+	            "//button[.//span[normalize-space()='Pay now'] and not(contains(@class,'d-none'))]"
+	        );
+
+	        WebElement payNow = wait.until(
+	            ExpectedConditions.presenceOfElementLocated(payNowLocator)
+	        );
+
+	        System.out.println("Pay Now displayed: " + payNow.isDisplayed());
+	        System.out.println("Pay Now enabled: " + payNow.isEnabled());
+
+	        System.out.println(
+	            "Pay Now HTML: " + payNow.getAttribute("outerHTML")
+	        );
+
+	        ((JavascriptExecutor) driver).executeScript(
+	            "arguments[0].scrollIntoView({block:'center'});",
+	            payNow
+	        );
+
+	        wait.until(
+	            ExpectedConditions.elementToBeClickable(payNow)
+	        );
+
+	        payNow.click();
+
+	        System.out.println("Pay Now clicked successfully.");
+
+	    } catch (TimeoutException e) {
+
+	        try {
+	            Alert alert = driver.switchTo().alert();
+
+	            System.out.println(
+	                "Application alert: " + alert.getText()
+	            );
+
+	            alert.accept();
+
+	        } catch (NoAlertPresentException ignored) {
+	            System.out.println("No browser alert present.");
+	        }
+
+	        throw e;
+	    }
 	    
-	    webdriverutility.click(Paynowbtn);
 	    WebDriverWait wait2 =
 	            new WebDriverWait(driver, Duration.ofSeconds(90));
 
@@ -2812,30 +3433,6 @@ Thread.sleep(5000);
 	                "Unsupported payment method: " + paymentMethod
 	        );
 	    }
-	    WebElement pnrElement = wait1.until(
-	    		ExpectedConditions.visibilityOfElementLocated(
-	    		bookingReference));
-
-	    		String pnr = pnrElement.getText().trim();
-
-	    		System.out.println("PNR = " + pnr);
-
-	    		Assert.assertFalse(
-	    		pnr.isEmpty(),
-	    		"PNR was not generated.");
-	    		System.out.println("STEP 1: Booking confirmed");
-	    		System.out.println("STEP 2: PNR extracted = " + pnr);
-
-	    		ExcelUtil.updateExcelCell(
-	    			    Ipathconstant.excelfile_path,
-	    			    "FlightBookingData",
-	    			    data.getTestCaseId(),
-	    			    "PNR",
-	    			    pnr
-	    			);
-	    		System.out.println(Ipathconstant.excelfile_path);
-
-	    		ReportUtil.logPass("PNR saved successfully: " + pnr);
 	    
 	    
 	}
@@ -2954,13 +3551,13 @@ Thread.sleep(5000);
 	    cvv.sendKeys(data.getSecurityCode());
 
 	    System.out.println("Card payment details entered.");
-	    ReportUtil.logPass("Other card details entered");
+	    ReportUtil.attachFullPageScreenshot(driver, "Other card details entered");
 	    
 	    webdriverutility.click(termsCheckbox);
 	    
 	    webdriverutility.click(Paynowbtn);
 
-	    // DO NOT CLICK PAY NOW HERE
+	
 	}
 	private void handleCardinalFrame(FlightBookingData data) throws Throwable {
 
@@ -3024,5 +3621,19 @@ Thread.sleep(5000);
 	                "Switched back to main page."
 	        );
 	    }
+	}
+	public void selectSavedCard(String cardName) {
+
+	    WebElement card = driver.findElement(
+	        By.xpath("//mat-radio-group[@formcontrolname='selectedCardId']"
+	               + "//mat-radio-button[.//*[contains(normalize-space(),'"
+	               + cardName + "')]]")
+	    );
+
+	    new WebDriverWait(driver, Duration.ofSeconds(10))
+	            .until(ExpectedConditions.elementToBeClickable(card))
+	            .click();
+
+	    System.out.println("Selected card: " + cardName);
 	}
 	}

@@ -100,6 +100,26 @@ public final class ExcelUtil {
                         : formatter.formatCellValue(cell);
             }
 
+System.out.println("Excel row number: " + (i + 1));
+System.out.println("TestCaseID: [" + rowData[0] + "]");
+System.out.println("Total Excel columns: " + cols);
+System.out.println("Current row array length: " + rowData.length);
+if (rowData.length > 49) {
+    System.out.println("Nationality: [" + rowData[49] + "]");
+}
+
+if (rowData.length > 50) {
+    System.out.println("PlaceofResidence: [" + rowData[50] + "]");
+}
+
+if (rowData.length > 51) {
+    System.out.println("Passport: [" + rowData[51] + "]");
+}
+
+if (rowData.length > 52) {
+    System.out.println("DOB: [" + rowData[52] + "]");
+}
+
             rows.add(rowData);
         }
 
@@ -198,6 +218,13 @@ public final class ExcelUtil {
             Object[] row) {
 
 
+        System.out.println("TestCaseID = [" + row[0] + "]");
+        System.out.println("Row length = " + row.length);
+
+        for (int i = 48; i <= 54; i++) {
+            System.out.println("row[" + i + "] = [" + row[i] + "]");
+        }
+      
 
         return new CompanyprofileData(
                row[0].toString(),
@@ -295,8 +322,9 @@ public final class ExcelUtil {
                  
           
        
-          );      
-     
+          );
+       
+        
 
     }
     
@@ -354,7 +382,10 @@ public final class ExcelUtil {
                  row[35].toString(),
                  row[36].toString(),
                  row[37].toString(),
-                 row[38].toString()
+                 row[38].toString(),
+                 row[39].toString(),
+                 row[40].toString()
+                 
                  
                  
               
@@ -431,6 +462,7 @@ public final class ExcelUtil {
         }
 
     }
+   
 
 
 }

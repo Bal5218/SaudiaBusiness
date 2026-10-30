@@ -27,8 +27,9 @@ public class NewTravllerPage extends BasePage {
 		webdriverutility=new WebdriverUtility(driver);
 	}
 
-	@FindBy(xpath = "//button[contains(@class,'menu-label') and normalize-space()='GTM CORPORATE']")
-	private WebElement GTMCorporatebtn;
+	@FindBy(xpath = "//li[@fragment='corporate']//button[contains(@class,'menu-label')]")
+	private WebElement GtmcorporateBtn;
+
 
 	@FindBy(xpath = "(//a[contains(.,'Travelers')])[1]")
 	private WebElement TravelersLink;
@@ -139,12 +140,41 @@ public class NewTravllerPage extends BasePage {
 
 	@FindBy(xpath = "(//button[@class='mdc-button mat-mdc-button-base button--primary-small mat-mdc-button mat-unthemed _mat-animation-noopable'])[2]")
 	private WebElement ThisIsmeText;
-
-	public void AddTraveller(CompanyprofileData data) throws Throwable {
 	
+	public void AddTraveller(CompanyprofileData data) throws Throwable {
+		String email = CompnayProfilepage.getEmail();
+		String nationality = data.getNationality().trim();
+		String residence = data.getPlaceofResidence().trim();
+
+		 String DepartmentName = TravelProfilingPage.getDepartmentName();
+		 String Designation = TravelProfilingPage.getDesignation();
+
+		String officeLocation = CompnayProfilepage.getOfficeLocation();
+	String mobileno=	 data.getMobileNo().trim();
+
+//		    if (officeLocation == null || officeLocation.trim().isEmpty()) {
+//		        throw new IllegalArgumentException(
+//		            "Office location Company Profile se pass nahi hua!"
+//		        );
+//		    }
+
+//		    officeLocation = officeLocation.trim();
+//
+//		    System.out.println("Office location received: " + officeLocation);
+//
+//		  if (officeLocation == null || officeLocation.trim().isEmpty()) {
+//		        throw new IllegalArgumentException(
+//		            "Office location Company Profile se pass nahi hua!"
+//		        );
+//		    }
+//
+//		    officeLocation = officeLocation.trim();
+//
+//		    System.out.println("Office location received: " + officeLocation);
+//		
 		
 		
-		webdriverutility.click(GTMCorporatebtn);
+		webdriverutility.click(GtmcorporateBtn);
 		
 		WebDriverWait wait=new WebDriverWait(driver, Duration.ofSeconds(60));
 		
@@ -157,12 +187,13 @@ public class NewTravllerPage extends BasePage {
 		
 		Thread.sleep(3000);
 		
-		webdriverutility.selectNgOptionByVisibleText(NationalityDropdown, data.getNationality().trim());
+		webdriverutility.selectNgOptionByVisibleText(NationalityDropdown, nationality);
 		
 		
-		webdriverutility.selectNgOptionByVisibleText(PlaceOfResidenceDropdown, data.getPlaceofResidence().trim());
 		
-		webdriverutility.click(acceptCookieBtn);
+		webdriverutility.selectNgOptionByVisibleText(PlaceOfResidenceDropdown, residence);
+		
+	//	webdriverutility.click(acceptCookieBtn);
 		
 		webdriverutility.selectDOBDate(DOBCalender,data.getDOB().trim());
 		
@@ -193,23 +224,29 @@ public class NewTravllerPage extends BasePage {
 	
 		webdriverutility.sendKeys(EmployeeNumberTextbox, EmployeeNumber);
 		
-		String email = TestDataGenerator.generateEmail(
-			    data.getEmail().trim()
-			);
-	
+		
 		webdriverutility.sendKeys(EmailTextBox, email);
 		Thread.sleep(3000);
 		webdriverutility.selectNgOptionByVisibleText(countryCodeDropdown, data.getcountrycode().trim());
 		
-		webdriverutility.sendKeys(mobileNumberTxtbox, data.getMobileNo().trim());
+		webdriverutility.sendKeys(mobileNumberTxtbox,mobileno);
+		System.out.println("Mobile no"+mobileno);
+//		
+//		WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(20));
+//
+//		wait1.until(ExpectedConditions.elementToBeClickable(OfficeLocationDropdwn)).click();
+		System.out.println("Office Location: [" + officeLocation + "]");
+		webdriverutility.selectMatOptionByVisibleText(
+			    OfficeLocationDropdwn,
+			    officeLocation
+			);
+	
+		System.out.println("Department Name: [" + DepartmentName + "]");
+		webdriverutility.selectMatOptionByVisibleText(departmentDropdown, DepartmentName);
 		
-		webdriverutility.selectMatOptionByVisibleText(OfficeLocationDropdwn, data.getOffice_Location_Name().trim());
-		
-		Thread.sleep(3000);
-		
-		webdriverutility.selectMatOptionByVisibleText(departmentDropdown, data.getDepartment_Name().trim());
-		
+	
 		webdriverutility.selectMatOptionByVisibleText(DesignationDropdwn, data.getDesignation().trim());
+		
 		
 		Thread.sleep(5000);
 		
