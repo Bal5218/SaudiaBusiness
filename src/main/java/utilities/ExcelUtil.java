@@ -332,6 +332,16 @@ if (rowData.length > 52) {
     
     public static FlightBookingData getFlightBookingData(Object[] row) {
     	
+    	   if (row == null) {
+    	        throw new IllegalArgumentException("Excel row is null");
+    	    }
+
+    	    if (row.length < 41) {
+    	        throw new IllegalArgumentException(
+    	                "Invalid Excel row. Expected 41 columns, found: " + row.length
+    	        );
+    	    }
+
     	
     	 return new FlightBookingData(
     			 
@@ -438,31 +448,43 @@ if (rowData.length > 52) {
         return testData;
     }
  
-    
+//    
+//    public static void closeExcel() {
+//
+//
+//        try {
+//
+//
+//            if(workbook != null) {
+//
+//                workbook.close();
+//
+//            }
+//
+//
+//        } catch(IOException e) {
+//
+//
+//            throw new RuntimeException(
+//                    "Unable to close Excel",
+//                    e);
+//
+//        }
+//
+//    }
+//   
+
     public static void closeExcel() {
-
-
         try {
-
-
-            if(workbook != null) {
-
+            if (workbook != null) {
                 workbook.close();
-
             }
-
-
-        } catch(IOException e) {
-
-
-            throw new RuntimeException(
-                    "Unable to close Excel",
-                    e);
-
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to close Excel", e);
+        } finally {
+            workbook = null;
+            sheet = null;
         }
-
     }
-   
-
 
 }

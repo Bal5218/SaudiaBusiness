@@ -1,5 +1,6 @@
 package flightBoookingTest;
 
+import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -10,6 +11,7 @@ import RegistrationPage.NewTravllerPage;
 import RegistrationPage.TravelProfilingPage;
 import base.BaseClass;
 import credentialPage.LoginPage;
+import driver.Driverfactory;
 import flightBookingPage.FlightBookingForAllPaxPage;
 import listeners.TestListener;
 import modeles.CompanyprofileData;
@@ -260,11 +262,12 @@ public class SaudiaBookingTest extends BaseClass {
 
     @Test(
     	    dataProvider = "FlightBookingData",
-    	    dataProviderClass = DataproviderUtil.class
-//retryAnalyzer = listeners.RetryAnalyser.class
+    	    dataProviderClass = DataproviderUtil.class,
+retryAnalyzer = listeners.RetryAnalyser.class
     	)
     	public void flightBookingTest(
     	      FlightBookingData data) throws Throwable {
+    	 WebDriver currentDriver = Driverfactory.getDriver();
     	LoginPage loginPage = new LoginPage(driver);
     	loginPage.clickLogin(data.getLoginRole());
     	    FlightBookingForAllPaxPage flightBookingPage =

@@ -54,7 +54,7 @@ public class DataproviderUtil {
     
 
 
-    @DataProvider(name = "FlightBookingData",parallel = false)
+    @DataProvider(name = "FlightBookingData",parallel=false)
     public static Object[][] flightBookingData() {
 
         ExcelUtil.openExcel(
