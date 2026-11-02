@@ -294,14 +294,34 @@ public class WebdriverUtility {
 
 	    System.out.println("Selected Ng Option : " + text);
 	}
+//	public void click(By locator) {
+//		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+//
+//		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+//
+//		element.click();
+//	}
+	// Existing click(By) method ko hi update karo
 	public void click(By locator) {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
-		WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+	    for (int i = 1; i <= 3; i++) {
+	        try {
+	            WebElement element = wait.until(
+	                ExpectedConditions.elementToBeClickable(locator)
+	            );
+	            element.click();
+	            return;
 
-		element.click();
+	        } catch (StaleElementReferenceException e) {
+	            System.out.println("Retry click: " + i);
+	        }
+	    }
+
+	    throw new RuntimeException(
+	        "Unable to click element after 3 attempts: " + locator
+	    );
 	}
-
 	public void selectMatOptionByVisibleText(
 	        WebElement matSelect, String optionText) {
 

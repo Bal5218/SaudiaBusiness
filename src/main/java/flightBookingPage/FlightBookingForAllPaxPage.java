@@ -110,11 +110,12 @@ public class FlightBookingForAllPaxPage extends BasePage {
 	// @FindBy(xpath = "//mat-radio-button[.//*[normalize-space()='Family trip']]")
 	// private WebElement FamilyTripRadioBtn;
 	By FamilyTripRadioBtn = By.xpath(
-    "//mat-radio-button[.//*[normalize-space()='Family trip']]"
-);
-By BusinessTripRadioBtn = By.xpath(
-    "//mat-radio-button[.//*[normalize-space()='Business trip']]"
-);
+		    "//mat-radio-button[@value='Family trip']"
+		);
+
+		By BusinessTripRadioBtn = By.xpath(
+		    "//mat-radio-button[@value='Business trip']"
+		);
 
 
 	// @FindBy(xpath = "//button[normalize-space()='Apply selection']")
@@ -629,18 +630,43 @@ Thread.sleep(1000);
 	                    employeeEmail
 	            );
 
-	            ReportUtil.attachFullPageScreenshot(
-	                    driver,
-	                    "Search data is entered"
-	            );
-
+//	          
+//	            By employeeSuggestion = By.xpath(
+//	                    "//mat-option[@role='option']"
+//	                    + "[.//*[contains(normalize-space(),'"
+//	                    + employeeEmail + "')]]"
+//	            );
+	            
 	            By employeeSuggestion = By.xpath(
+
 	                    "//mat-option[@role='option']"
-	                    + "[.//*[contains(normalize-space(),'"
-	                    + employeeEmail + "')]]"
+	                    + "[.//*[contains(normalize-space(.),'"
+	                    + employeeEmail
+	                    + "')]]"
+
+	                    + " | "
+
+	                    + "//mat-option[@role='option']"
+	                    + "//p[contains(@class,'email')"
+	                    + " and normalize-space()='"
+	                    + employeeEmail
+	                    + "']/ancestor::mat-option"
+
 	            );
 
-	            webdriverutility.clickWithRetry(employeeSuggestion);
+	            WebElement suggestion = wait.until(
+	                    ExpectedConditions.elementToBeClickable(
+	                            employeeSuggestion
+	                    )
+	            );
+
+	            suggestion.click();
+
+	            System.out.println(
+	                    "Employee suggestion selected: " + employeeEmail
+	            );
+
+	    //        webdriverutility.clickWithRetry(employeeSuggestion);
 	        }
 
 	    } else {
@@ -665,7 +691,7 @@ Thread.sleep(1000);
 	        );
 	     
 
-	        Thread.sleep(7000);
+	     Thread.sleep(3000);
 
 
 	        // =====================================================
@@ -1309,9 +1335,13 @@ private void handleMultiCityResultFlow() throws Throwable {
 	            false,
 	            null
 	    );
-	    new Actions(driver)
-        .moveToElement(EmployeeDetailsTextbox)
-        .perform();
+//	    new Actions(driver)
+//        .moveToElement(EmployeeDetailsTextbox)
+//        .perform();
+	    
+	    
+	    
+	    
 
 System.out.println("Mouse moved away from calendar.");
 
@@ -1329,7 +1359,7 @@ System.out.println("Mouse moved away from calendar.");
 	    // =====================================================
 	    // VALIDATE DATA
 	    // =====================================================
-webdriverutility.click(acceptCookieBtn);
+//webdriverutility.click(acceptCookieBtn);
 	    if (toCities.length != dates.length) {
 
 	        throw new RuntimeException(
@@ -2171,6 +2201,96 @@ System.out.println(
 
 	}
 
+//	public void selectTripCategory(FlightBookingData data)
+//	        throws Throwable {
+//
+//	    WebDriverWait wait =
+//	            new WebDriverWait(driver, Duration.ofSeconds(60));
+//
+//	    String tripCategory = data.getTripCategory().trim();
+//
+//	    // 1. Close calendar popup
+//	   
+//	    ((JavascriptExecutor) driver).executeScript(
+//	            "document.body.click();"
+//	    );
+//
+//
+//	    System.out.println("Calendar popup closed.");
+//
+//	    // 2. Open Trip Type dropdown
+//	    By tripTypeDropdown = By.xpath(
+//	            "//mat-form-field[.//*[normalize-space()='Trip type']]"
+//	    );
+//
+//	    WebElement dropdown = wait.until(
+//	            ExpectedConditions.elementToBeClickable(tripTypeDropdown)
+//	    );
+//
+//	    ((JavascriptExecutor) driver).executeScript(
+//	            "arguments[0].scrollIntoView({block:'center'});",
+//	            dropdown
+//	    );
+//
+//	    dropdown.click();
+//
+//	    System.out.println("Trip Type dropdown opened.");
+//
+//	    // 3. Select category
+//	    By tripCategoryLocator;
+//
+//	    if (tripCategory.equalsIgnoreCase("Business trip")) {
+//
+//	        tripCategoryLocator = BusinessTripRadioBtn;
+//
+//	    } else if (tripCategory.equalsIgnoreCase("Family trip")) {
+//
+//	        tripCategoryLocator = FamilyTripRadioBtn;
+//
+//	    } else {
+//
+//	        throw new IllegalArgumentException(
+//	                "Invalid Trip Category: " + tripCategory
+//	        );
+//	    }
+//
+//	    WebElement categoryRadio = wait.until(
+//	            ExpectedConditions.elementToBeClickable(
+//	                    tripCategoryLocator
+//	            )
+//	    );
+//
+//	    ((JavascriptExecutor) driver).executeScript(
+//	            "arguments[0].click();",
+//	            categoryRadio
+//	    );
+//
+//	    System.out.println("Selected category: " + tripCategory);
+//
+//	    // 4. Apply selection
+//	    WebElement applySelection = wait.until(
+//	            ExpectedConditions.elementToBeClickable(
+//	                    ApplySelectionBtn
+//	            )
+//	    );
+//
+//	    ((JavascriptExecutor) driver).executeScript(
+//	            "arguments[0].scrollIntoView({block:'center'});",
+//	            applySelection
+//	    );
+//
+//	    applySelection.click();
+//
+//	    // 5. Wait until category popup closes
+//	    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+//	            tripCategoryLocator
+//	    ));
+//
+//	    System.out.println(
+//	            tripCategory + " applied successfully."
+//	    );
+//	}
+
 	public void selectTripCategory(FlightBookingData data)
 	        throws Throwable {
 
@@ -2180,33 +2300,50 @@ System.out.println(
 	    String tripCategory = data.getTripCategory().trim();
 
 	    // 1. Close calendar popup
-	   
 	    ((JavascriptExecutor) driver).executeScript(
 	            "document.body.click();"
 	    );
 
-
 	    System.out.println("Calendar popup closed.");
 
-	    // 2. Open Trip Type dropdown
-	    By tripTypeDropdown = By.xpath(
-	            "//mat-form-field[.//*[normalize-space()='Trip type']]"
-	    );
-
+	    // 2. Open Booking Details dropdown
 	    WebElement dropdown = wait.until(
-	            ExpectedConditions.elementToBeClickable(tripTypeDropdown)
+	            ExpectedConditions.elementToBeClickable(
+	                    TravelCalssDropdown
+	            )
 	    );
 
 	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            dropdown
-	    );
+	    	    "arguments[0].scrollIntoView({block:'center'});",
+	    	    dropdown
+	    	);
 
-	    dropdown.click();
+	    	dropdown.click();
 
-	    System.out.println("Trip Type dropdown opened.");
+	    	String dropdownHtml = (String) ((JavascriptExecutor) driver)
+	    	        .executeScript("return arguments[0].outerHTML;", dropdown);
 
-	    // 3. Select category
+	    	System.out.println("DROPDOWN HTML AFTER CLICK: " + dropdownHtml);
+
+	    	By familyOption = By.xpath(
+	    	    "//mat-radio-button[@value='Family trip']"
+	    	);
+
+	    	By businessOption = By.xpath(
+	    	    "//mat-radio-button[@value='Business trip']"
+	    	);
+
+	    	wait.until(
+	    	    ExpectedConditions.or(
+	    	        ExpectedConditions.visibilityOfElementLocated(familyOption),
+	    	        ExpectedConditions.visibilityOfElementLocated(businessOption)
+	    	    )
+	    	);
+
+	    	System.out.println("Trip category options are visible.");
+	    System.out.println("Booking Details dropdown clicked.");
+
+	    // 3. Identify Trip Category locator
 	    By tripCategoryLocator;
 
 	    if (tripCategory.equalsIgnoreCase("Business trip")) {
@@ -2224,44 +2361,85 @@ System.out.println(
 	        );
 	    }
 
+	 // 4. Wait for selected category label
 	    WebElement categoryRadio = wait.until(
-	            ExpectedConditions.elementToBeClickable(
+	        ExpectedConditions.visibilityOfElementLocated(
+	            tripCategoryLocator
+	        )
+	    );
+
+	    // 5. Scroll and click label
+	    ((JavascriptExecutor) driver).executeScript(
+	        "arguments[0].scrollIntoView({block:'center'});",
+	        categoryRadio
+	    );
+
+	    wait.until(
+	        ExpectedConditions.elementToBeClickable(
+	            tripCategoryLocator
+	        )
+	    );
+
+	    categoryRadio.click();
+
+	    System.out.println(
+	        "Selected category: " + tripCategory
+	    );
+	 // 6. Apply Selection only if popup is still open
+
+	    WebElement applySelection = null;
+
+	    List<WebElement> applyButtons =
+	            driver.findElements(ApplySelectionBtn);
+
+	    for (WebElement button : applyButtons) {
+
+	        if (button.isDisplayed() && button.isEnabled()) {
+	            applySelection = button;
+	            break;
+	        }
+	    }
+
+	    if (applySelection != null) {
+
+	        ((JavascriptExecutor) driver).executeScript(
+	                "arguments[0].scrollIntoView({block:'center'});",
+	                applySelection
+	        );
+
+	        wait.until(
+	                ExpectedConditions.elementToBeClickable(
+	                        ApplySelectionBtn
+	                )
+	        );
+
+	        applySelection.click();
+
+	        System.out.println("Apply Selection clicked.");
+
+	    } else {
+
+	        System.out.println(
+	                "Apply Selection button not visible. Checking whether popup is already closed."
+	        );
+	    }
+
+	    // 7. Wait for category popup to close
+	    wait.until(
+	            ExpectedConditions.invisibilityOfElementLocated(
 	                    tripCategoryLocator
 	            )
 	    );
-
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].click();",
-	            categoryRadio
-	    );
-
-	    System.out.println("Selected category: " + tripCategory);
-
-	    // 4. Apply selection
-	    WebElement applySelection = wait.until(
-	            ExpectedConditions.elementToBeClickable(
-	                    ApplySelectionBtn
-	            )
-	    );
-
-	    ((JavascriptExecutor) driver).executeScript(
-	            "arguments[0].scrollIntoView({block:'center'});",
-	            applySelection
-	    );
-
-	    applySelection.click();
-
-	    // 5. Wait until category popup closes
-	    wait.until(ExpectedConditions.invisibilityOfElementLocated(
-	            tripCategoryLocator
-	    ));
 
 	    System.out.println(
 	            tripCategory + " applied successfully."
 	    );
 	}
-
-
+	
+	
+	
+	
+	
 	
 //	public void Adultdetails(FlightBookingData data) throws Throwable {
 //

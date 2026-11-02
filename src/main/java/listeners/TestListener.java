@@ -106,9 +106,7 @@ public class TestListener implements ITestListener {
 	        }
 
 
-	        displayName =
-	                "[" + testCaseId
-	                + "(" + tripType + ")]";
+	        displayName = testCaseId;
 	    }
 
 
