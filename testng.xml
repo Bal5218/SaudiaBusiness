@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Saudia Parallel Suite"
+       data-provider-thread-count="4">
 
-<suite name="SaudiaParallelSuite"
-       data-provider-thread-count="3">
+    <test name="Flight Booking Tests">
 
-    <test name="FlightBookingTests">
+        <parameter name="browser" value="chrome"/>
+
         <classes>
-            <class name="flightBoookingTest.SaudiaBookingTest"/>
+            <class name="flightBookingTest.SaudiaBookingTest"/>
         </classes>
+
     </test>
 
 </suite>
