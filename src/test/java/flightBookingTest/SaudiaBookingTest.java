@@ -1,4 +1,4 @@
-package flightBoookingTest;
+package flightBookingTest;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Listeners;
@@ -268,10 +268,10 @@ retryAnalyzer = listeners.RetryAnalyser.class
     	public void flightBookingTest(
     	      FlightBookingData data) throws Throwable {
     	 WebDriver currentDriver = Driverfactory.getDriver();
-    	LoginPage loginPage = new LoginPage(driver);
+    	 LoginPage loginPage = new LoginPage(getDriver());
     	loginPage.clickLogin(data.getLoginRole());
     	    FlightBookingForAllPaxPage flightBookingPage =
-    	            new FlightBookingForAllPaxPage(driver);
+    	            new FlightBookingForAllPaxPage(getDriver());
 
     	    flightBookingPage.FlightBookingForAllPax(data);
     	}
