@@ -77,12 +77,13 @@ public final class TestDataGenerator {
 
         return String.valueOf(number);
     }
+   
 
     // Building Number
    
     public static String generateBuildingNumber() {
 
-        int number = 100 + counter.getAndIncrement();
+        int number = 1000 + counter.getAndIncrement() % 9000;
 
         return String.valueOf(number);
     }
@@ -93,24 +94,32 @@ public final class TestDataGenerator {
         return "company" + getTwoDigitNumber() + "@quadlabs.com";
     }
 
-    // Project Name
-   
+  // Project Name
      public static String generateProjectName(String baseName) {
+         return baseName + System.currentTimeMillis();
+     }
 
-    	    return baseName + System.currentTimeMillis();
+     // Business Unit Name
+     public static String generateBusinessunit_code(String baseCode) {
+    	    return baseCode.trim() + getTwoDigitNumber();
     	}
 
-    // Project Code
-   
+    	public static String generateUniqueBusinessUnitName(String excelName) {
+    	    return excelName.trim() + "_" + System.currentTimeMillis();
+    	}
+     // Project Code
      public static String generateProjectCode(String baseCode) {
-
-    	    return baseCode + System.currentTimeMillis();
-    	}
+         return baseCode + System.currentTimeMillis();
+     }
+     
+    
+     
     //ofiice Location
     public static String generateOfficeLocation(String officeLocation) {
 
         return officeLocation + generateAlphaNumericCode();
     }
+    
     public static String generateOfficeLocationcode(String officeLocationCode) {
 
         return officeLocationCode + generateAlphaNumericCode();

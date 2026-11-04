@@ -13,6 +13,7 @@ public class FlightBookingData {
 	private final String Employeedetails;
 	
 	private final String TripCategory;
+	private final String LoginRole;
 	private final String MultiCityTo;
 	private final String MultiCityDepartureDate;
 	private final String Adults;
@@ -41,6 +42,7 @@ public class FlightBookingData {
 	private final String Priority;
 	
 	private final String paymentMethod;
+	private final String SavedCardName;
 	private final String CardNumber;
 	
 	private final String CardHolderName;
@@ -67,6 +69,7 @@ public class FlightBookingData {
 			String Returndate,
 			String TravellerType,
 			String TripCategory,
+			String LoginRole,
 			String Employeedetails,
 		
 			String MultiCityTo,
@@ -97,6 +100,7 @@ public class FlightBookingData {
 			String dependentName,
 			String Priority,
 			String paymentMethod,
+			String SavedCardName,
 		
 			String CardNumber,
 			String CardHolderName,
@@ -119,6 +123,7 @@ public class FlightBookingData {
 		this.Returndate=Returndate;
 		this.TravellerType=TravellerType;
 		this.TripCategory=TripCategory;
+		this.LoginRole=LoginRole;
 		this.Employeedetails=Employeedetails; 
 		
 		this.MultiCityTo=MultiCityTo;
@@ -148,6 +153,7 @@ public class FlightBookingData {
 		this.dependentName=dependentName;
 		this.Priority=Priority;
 		this.paymentMethod=paymentMethod;
+		this. SavedCardName= SavedCardName;
 		this.CardNumber=CardNumber;
 		this.CardHolderName=CardHolderName;
 		this. SecurityCode= SecurityCode;
@@ -189,6 +195,11 @@ public class FlightBookingData {
 	    public String getTripCategory() {
 	        return TripCategory;
 	    }
+	    
+	    public String getLoginRole() {
+	        return LoginRole;
+	    }
+	    
 	    public String getEmployeedetails() {
 	        return Employeedetails;
 	    }
@@ -286,7 +297,11 @@ public class FlightBookingData {
 	    public String getPaymentMethod() {
 	        return paymentMethod;
 	    }
-			
+	    public String getSavedCardName() {
+	        return SavedCardName;
+	    }
+	    
+	    
 	    public String getCardNumber() {
 	        return CardNumber;
 	    }

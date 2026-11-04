@@ -1,3 +1,4 @@
+
 package driver;
 
 import org.openqa.selenium.WebDriver;
@@ -23,7 +24,6 @@ public final class Driverfactory {
         if ("chrome".equalsIgnoreCase(browser)) {
 
             ChromeOptions options = new ChromeOptions();
-
             options.addArguments("--guest");
             options.addArguments("--start-maximized");
             options.addArguments("--disable-notifications");
@@ -34,7 +34,6 @@ public final class Driverfactory {
         } else if ("edge".equalsIgnoreCase(browser)) {
 
             EdgeOptions options = new EdgeOptions();
-
             options.addArguments("--start-maximized");
             options.addArguments("--disable-notifications");
             options.addArguments("--disable-popup-blocking");
@@ -44,11 +43,9 @@ public final class Driverfactory {
         } else if ("firefox".equalsIgnoreCase(browser)) {
 
             FirefoxOptions options = new FirefoxOptions();
-
             webDriver = new FirefoxDriver(options);
 
         } else {
-
             throw new IllegalArgumentException(
                     "Unsupported browser: " + browser);
         }
@@ -59,25 +56,32 @@ public final class Driverfactory {
     }
 
     public static WebDriver getDriver() {
-    WebDriver webDriver = driver.get();
 
-    if (webDriver == null) {
-        throw new IllegalStateException(
-            "WebDriver is not initialized for this thread."
-        );
+        WebDriver webDriver = driver.get();
+
+        if (webDriver == null) {
+            throw new IllegalStateException(
+                    "WebDriver is not initialized for Thread ID: "
+                            + Thread.currentThread().getId());
+        }
+
+        return webDriver;
     }
 
-    return webDriver;
-}
     public static void quitDriver() {
 
         WebDriver webDriver = driver.get();
 
-        if (webDriver != null) {
+        try {
+            if (webDriver != null) {
+                webDriver.quit();
 
-          // webDriver.quit();
-
-         //  driver.remove();
+                System.out.println(
+                        "Browser closed successfully for Thread ID: "
+                                + Thread.currentThread().getId());
+            }
+        } finally {
+            driver.remove();
         }
     }
 }

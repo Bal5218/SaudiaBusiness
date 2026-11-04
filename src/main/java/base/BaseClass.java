@@ -8,43 +8,45 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
-import credentialPage.LoginPage;
 import driver.Driverfactory;
 import utilities.ConfigReader;
 
 public class BaseClass {
 
-    public WebDriver driver;
-
-    private LoginPage loginPage;
-
     @Parameters("browser")
-    @BeforeMethod
-    public void setup(@Optional("chrome") String browser) throws Throwable {
+    @BeforeMethod(alwaysRun = true)
+    public void setup(@Optional("chrome") String browser)
+            throws Throwable {
 
-       
+        WebDriver currentDriver =
+                Driverfactory.initializeDriver(browser);
 
-        driver = Driverfactory.initializeDriver(browser);
+        currentDriver.manage().window().maximize();
 
-        driver.manage().window().maximize();
-
-        driver.manage().timeouts()
+        currentDriver.manage().timeouts()
                 .implicitlyWait(Duration.ofSeconds(10));
 
-        driver.get(ConfigReader.getproperty("url"));
+        currentDriver.get(ConfigReader.getproperty("url"));
 
-        loginPage = new LoginPage(driver);
+        System.out.println(
+                "Browser initialized | Thread ID: "
+                + Thread.currentThread().getId()
+        );
+    }
 
-        loginPage.clickLogin();
+    protected WebDriver getDriver() {
+
+        return Driverfactory.getDriver();
     }
 
     @AfterMethod(alwaysRun = true)
     public void tearDown() {
 
-        
+        System.out.println(
+                "Closing browser | Thread ID: "
+                + Thread.currentThread().getId()
+        );
 
         Driverfactory.quitDriver();
-
-        driver = null;
     }
 }

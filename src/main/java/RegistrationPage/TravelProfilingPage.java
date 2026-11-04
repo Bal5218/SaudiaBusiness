@@ -20,11 +20,11 @@ private WebdriverUtility webdriverutility;
 		
 	}
 		
-	  @FindBy(xpath = "//div[@class='custom-tree-heading' and contains(.,'Traveler Profiling')]")
+	  @FindBy(xpath = "//div[@class='custom-tree-heading' and contains(.,'Traveler profile ')]")
 	    private WebElement Travellerprofilling;
 
 
-		 @FindBy(xpath = "//button[contains(@class,'custom-tree-child') and normalize-space()='Department']")
+		 @FindBy(xpath = "//button[contains(@class,'custom-tree-child') and .//div[contains(@class,'custom-tree-heading') and normalize-space()='Departments']]")
 		    private WebElement Departmentbtn;
 		
 		 @FindBy(xpath="//a[@class='link' and contains(.,'Add new')]")
@@ -44,9 +44,8 @@ private WebdriverUtility webdriverutility;
 		    private WebElement DepartmentSuccessMsg;
 		    //Designation
 		    
-		    @FindBy(xpath = "//button[contains(@class,'custom-tree-child') and normalize-space()='Designation']")
+		    @FindBy(xpath = "//button[contains(@class,'custom-tree-child') and .//div[contains(@class,'custom-tree-heading') and normalize-space()='Designation name']]")
 		    private WebElement Designationbtn;
-	
 		    @FindBy(xpath="//a[.//mat-icon[normalize-space()='add'] and contains(normalize-space(), 'Add new')]")
 		    private WebElement AddNewbutton;
 		    
@@ -78,7 +77,7 @@ private WebdriverUtility webdriverutility;
 		    
 		    
 		    //Travel Category
-		    @FindBy(xpath="//button[contains(@class,'custom-tree-child') and normalize-space()='Travel category']")
+		    @FindBy(xpath="//button[contains(@class,'custom-tree-child') and .//div[contains(@class,'custom-tree-heading') and normalize-space()='Travel categories']]")
 		    private WebElement Travel_categorybtn;
 		    
 		    @FindBy(xpath="//mat-form-field[.//mat-label[normalize-space()='Travel categories']]//input")
@@ -105,18 +104,29 @@ private WebdriverUtility webdriverutility;
 		    
 		    
 		    
-		    private String DepartmentName;
-		    private String Designation;
-		    private String TravelCategory;
-			
+		    public static  String DepartmentName;
+		    public static String Designation;
+		  
 		
 		
-		 public void DepartmentDetails(CompanyprofileData data,String CategoryName,String CategoryCode,String officeLocation,String TripType,String TravelCategory) throws Throwable {
+		 public void DepartmentDetails(CompanyprofileData data) throws Throwable {
 			 
 			 
-			 DepartmentName=TestDataGenerator.generateDepartment_Name(data.getDepartment_Name().trim());
-			 Designation=TestDataGenerator.generateDesignation(data.getDesignation().trim());
-			
+			 DepartmentName = TestDataGenerator.generateDepartment_Name(
+					    data.getDepartment_Name().trim()
+					);
+
+					System.out.println("Created Department Name: [" + DepartmentName + "]");
+			 System.out.println(DepartmentName);
+			  Designation=TestDataGenerator.generateDesignation(data.getDesignation().trim());
+			  System.out.println("Created Department Name: [" + Designation + "]");
+
+		     String officeLocation = CompnayProfilepage.getOfficeLocation();
+		     String TravelCategory = CompnayProfilepage.getTravelCategory();
+		     String CategoryName = CompnayProfilepage.getCategoryName();
+		     String CategoryCode = CompnayProfilepage.getCategoryCode();
+		     String TripType = CompnayProfilepage.getTripType();
+
 			 
 			 webdriverutility.click(Travellerprofilling);
 			 
@@ -163,14 +173,14 @@ private WebdriverUtility webdriverutility;
 			 Thread.sleep(3000);
 			 
 			 
+			 
 			 webdriverutility.selectMatOptionByVisibleText(Associate_with_Office_location, officeLocation);
 			 
 				
-	    		webdriverutility.waitForClickable(SavebtnForAll);
+			 webdriverutility.waitForClickable(SavebtnForAll);
 	    		
 	    		Thread.sleep(5000);
 	    		webdriverutility.click(SavebtnForAll);
-	    	
 	    	
 	    		Thread.sleep(2000);
 				 
@@ -183,20 +193,21 @@ private WebdriverUtility webdriverutility;
 	    		    ReportUtil.logFail("Designation validation failed");
 	    		}
 	    		
-				EmployeeGradeDetails(data,CategoryName,CategoryCode,officeLocation);
+				EmployeeGradeDetails(data);
 	    		
-				TravelCategoryDetails(data,CategoryCode,TripType,TravelCategory);
+				TravelCategoryDetails(data);
 			 
 			 
 			 
 			 
 			 
 		 }
-		 public void EmployeeGradeDetails(CompanyprofileData data, String CategoryName,String CategoryCode,  String officeLocation) throws Throwable {
+		 public void EmployeeGradeDetails(CompanyprofileData data) throws Throwable {
 			       
-			      
+			   String CategoryName = CompnayProfilepage.getCategoryName();
+			     String CategoryCode = CompnayProfilepage.getCategoryCode();
 			 
-			
+			     String officeLocation = CompnayProfilepage.getOfficeLocation();
 			 
 			 webdriverutility.click(Employee_Grade_Btn);
 			 
@@ -232,10 +243,11 @@ private WebdriverUtility webdriverutility;
 			 
 		 }
 		 
-		 public void TravelCategoryDetails(CompanyprofileData data,String CategoryCode,String TripType,String TravelCategory) throws Throwable {
+		 public void TravelCategoryDetails(CompanyprofileData data) throws Throwable {
 			 
-			
-			 
+			 String TravelCategory = CompnayProfilepage.getTravelCategory();
+		     String CategoryCode = CompnayProfilepage.getCategoryCode();
+		     String TripType = CompnayProfilepage.getTripType();
 			 webdriverutility.click(Travel_categorybtn);
 			 
 			 Thread.sleep(3000);
@@ -289,10 +301,16 @@ private WebdriverUtility webdriverutility;
 	    		}
 			 
 					 
-			 
+			
 		 }
 			 
-			 
+			public static String getDepartmentName() {
+			    return DepartmentName;
+			}
+			public static String getDesignation() {
+			    return Designation;
+			}
+ 
 			 
 		 
 		 

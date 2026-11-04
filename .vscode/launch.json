@@ -1,0 +1,41 @@
+﻿{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug TestNG Suite (testng.xml)",
+            "request": "launch",
+            "mainClass": "org.testng.TestNG",
+            "args": "testng.xml",
+            "cwd": "${workspaceFolder}",
+            "projectName": "Project_SAUDIA",
+            "javaExec": "C:\\Program Files\\Java\\jdk-21.0.11\\bin\\java.exe"
+        },
+        {
+            "type": "java",
+            "name": "Debug SaudiaBookingTest",
+            "request": "launch",
+            "mainClass": "org.testng.TestNG",
+            "args": "-testclass flightBoookingTest.SaudiaBookingTest",
+            "cwd": "${workspaceFolder}",
+            "projectName": "Project_SAUDIA",
+            "javaExec": "C:\\Program Files\\Java\\jdk-21.0.11\\bin\\java.exe"
+        },
+        {
+            "type": "java",
+            "name": "Debug Current Test File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "cwd": "${workspaceFolder}",
+            "projectName": "Project_SAUDIA",
+            "javaExec": "C:\\Program Files\\Java\\jdk-21.0.11\\bin\\java.exe"
+        },
+        {
+            "type": "java",
+            "name": "Attach to Maven Debug (Port 5005)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 5005
+        }
+    ]
+}
