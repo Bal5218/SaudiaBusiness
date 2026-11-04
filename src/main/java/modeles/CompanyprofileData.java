@@ -77,6 +77,10 @@ public class CompanyprofileData {
 		private final String UserType;
 		
 		private final String Password;
+		private final String ApprovalFlow;
+
+		private final String totalApprovers;
+
 		
 		
 		
@@ -147,7 +151,9 @@ public class CompanyprofileData {
 	               String EmployeeNumber,
 	               String Email,
 	               String UserType,
-	               String Password
+	               String Password,
+				  String ApprovalFlow,
+				  String totalApprovers
 	             
 	               
 	               
@@ -227,7 +233,8 @@ public class CompanyprofileData {
 	    	this.Email=Email;
 	    	this.UserType=UserType;
 	    	this.Password=Password;
-	    	
+			this.ApprovalFlow=ApprovalFlow;
+	    	this.totalApprovers=totalApprovers;
 	    			
 	    	
 	    	
@@ -448,8 +455,13 @@ public class CompanyprofileData {
 	    public String getPassword() {
 	        return Password;
 	    }
+		  public String getApprovalFlow() {
+	        return ApprovalFlow;
+	    }
 	    
-
+public String getTotalApprovers() {
+   return totalApprovers;
+	    }
 }
 
 		

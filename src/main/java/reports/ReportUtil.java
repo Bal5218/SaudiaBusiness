@@ -1,6 +1,6 @@
 package reports;
 
-
+import driver.Driverfactory;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -435,7 +435,33 @@ public static void attachFullPageScreenshot(
         }
     }
 }
+public static void attachFullScreenScreenshotwithurl(String message)
+        throws Exception {
 
+    WebDriver driver = Driverfactory.getDriver();
+
+    ExtentTest test = ExtentTestManager.getTest();
+
+    if (driver == null || test == null) {
+        System.out.println("Driver or ExtentTest is NULL.");
+        return;
+    }
+
+    byte[] screenshot =
+            ((TakesScreenshot) driver)
+                    .getScreenshotAs(OutputType.BYTES);
+
+    String base64 = java.util.Base64
+            .getEncoder()
+            .encodeToString(screenshot);
+
+    test.info(
+            message,
+            MediaEntityBuilder
+                    .createScreenCaptureFromBase64String(base64)
+                    .build()
+    );
+}
 
     public static void logFail(String message) {
 

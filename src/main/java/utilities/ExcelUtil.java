@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ import modeles.CompanyprofileData;
 import modeles.FlightBookingData;
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import java.nio.file.StandardCopyOption;
 
 public final class ExcelUtil {
 
@@ -213,6 +218,35 @@ if (rowData.length > 52) {
         }
     }
 
+public static void copyExcelToReportFolder() throws IOException {
+
+    Path source = Paths.get(Ipathconstant.excelfile_path);
+
+    Path destination = Paths.get(
+            Ipathconstant.projectpath,
+            "test-output",
+            "FlightSaudiadata.xlsx"
+    );
+
+    if (!Files.exists(source)) {
+        throw new IOException(
+                "Source Excel file not found: " + source
+        );
+    }
+
+    Files.createDirectories(destination.getParent());
+
+    Files.copy(
+            source,
+            destination,
+            StandardCopyOption.REPLACE_EXISTING
+    );
+
+    System.out.println(
+            "Excel attached with report folder: " + destination
+    );
+}
+
   
     public static CompanyprofileData getCompanyprofileData(
             Object[] row) {
@@ -311,7 +345,10 @@ if (rowData.length > 52) {
 
                 row[59].toString(),
                 row[60].toString(),
-                row[61].toString()
+                row[61].toString(),
+                row[62].toString(),
+                row[63].toString()
+
                 
                 
                 
@@ -336,7 +373,7 @@ if (rowData.length > 52) {
     	        throw new IllegalArgumentException("Excel row is null");
     	    }
 
-    	    if (row.length < 41) {
+    	    if (row.length < 42) {
     	        throw new IllegalArgumentException(
     	                "Invalid Excel row. Expected 41 columns, found: " + row.length
     	        );
@@ -394,7 +431,8 @@ if (rowData.length > 52) {
                  row[37].toString(),
                  row[38].toString(),
                  row[39].toString(),
-                 row[40].toString()
+                 row[40].toString(),
+                row[41].toString()
                  
                  
                  
