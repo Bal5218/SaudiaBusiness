@@ -50,8 +50,9 @@ public class FlightBookingData {
 	private final String SecurityCode;
 	private final String Expirymonth;
 	private final String ExpiryYear;
-	
 	private final String OTP;
+	private final String PNR;
+	
 	
 	
 	
@@ -107,7 +108,8 @@ public class FlightBookingData {
 			String SecurityCode,
 			String Expirymonth,
 			String ExpiryYear,
-			String OTP
+			String OTP,
+			String PNR
 			
 			
 			
@@ -159,7 +161,8 @@ public class FlightBookingData {
 		this. SecurityCode= SecurityCode;
 		this.Expirymonth=Expirymonth;
 		this.ExpiryYear=ExpiryYear;
-		this.OTP=OTP;
+		this.OTP = OTP;
+		this.PNR = PNR;
 		
 		
 		
@@ -322,12 +325,15 @@ public class FlightBookingData {
 	    public String getExpiryYear() {
 	        return ExpiryYear;
 	    }
+		public String getOTP() {
+    return OTP;
+}
+
 			
 		
-	    public String getOTP() {
-	        return OTP;
-	    }
-			
+	    public String getPNR() {
+    return PNR;
+}
 			
 			
 				

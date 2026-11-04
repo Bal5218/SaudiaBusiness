@@ -83,8 +83,8 @@ private static String getTestCaseId(String methodName) {
 
     switch (methodName) {
 
-        case "CompnayProfile":
-            return "TC01";
+        case "CompanyProfile":
+    return "TC01";
 
         case "OfficeLocationAddTest":
             return "TC02";

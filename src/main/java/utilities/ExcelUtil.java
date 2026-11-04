@@ -373,7 +373,7 @@ public static void copyExcelToReportFolder() throws IOException {
     	        throw new IllegalArgumentException("Excel row is null");
     	    }
 
-    	    if (row.length < 41) {
+    	    if (row.length < 42) {
     	        throw new IllegalArgumentException(
     	                "Invalid Excel row. Expected 41 columns, found: " + row.length
     	        );
@@ -431,7 +431,8 @@ public static void copyExcelToReportFolder() throws IOException {
                  row[37].toString(),
                  row[38].toString(),
                  row[39].toString(),
-                 row[40].toString()
+                 row[40].toString(),
+                row[41].toString()
                  
                  
                  
